@@ -1,0 +1,39 @@
+.wave-canvas {
+  height: 100px;
+}
+
+.player {
+  position: relative;
+  width: 1200px;
+  margin: 0 auto;
+  display: block;
+  background: #eee;
+}
+
+.dragger {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: #666;
+  cursor: col-resize;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: -1px;
+    right: -1px;
+    top: 0;
+    bottom: 0;
+  }
+
+  &:hover {
+    background: #333;
+  }
+}
+
+.file {
+  input {
+    visibility: hidden;
+  }
+}
