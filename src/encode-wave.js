@@ -15,7 +15,7 @@ export function encodeAudioBuffer(audioBuffer) {
     .map(i => audioBuffer.getChannelData(i))
 
   const interleaved = channelNum > 1 ? interleave(channelDatas[0], channelDatas[1]) : channelDatas[0]
-  const dataview = encodeWAV(interleaved, channelNum)
+  const dataview = encodeWAV(interleaved, channelNum, audioBuffer.sampleRate)
   const audioBlob = new Blob([dataview], { type: 'audio/wav' })
 
   return audioBlob

@@ -1,17 +1,16 @@
 import { EventEmitter } from 'events'
 import { readArrayBuffer, autobind } from './utils'
+import { audioContext, sliceAudioBuffer, decodeAudioArrayBuffer } from './audio-helper'
 
 export default class WebAudio extends EventEmitter {
   constructor(file) {
     super()
     this.blob = file
-    this.audioContext = new AudioContext()
-    this.offlineContext = new OfflineAudioContext(1, 2, this.audioContext.sampleRate)
   }
 
   async init() {
     const arrayBuffer = await readArrayBuffer(this.blob)
-    const audioBuffer = await this._decodeAudioData(arrayBuffer)
+    const audioBuffer = await decodeAudioArrayBuffer(arrayBuffer)
     const channelData = await this._getDefaultChannelData(audioBuffer)
 
     this.arrayBuffer = arrayBuffer
@@ -23,11 +22,11 @@ export default class WebAudio extends EventEmitter {
   }
 
   _initAudioComponent() {
-    const { audioContext, audioBuffer } = this
+    const { audioBuffer } = this
     const gainNode = audioContext.createGain()
     gainNode.connect(audioContext.destination)
 
-    const scriptNode = audioContext.createScriptProcessor(16384)
+    const scriptNode = audioContext.createScriptProcessor(4096)
     scriptNode.onaudioprocess = this._onprocess
 
     this.gainNode = gainNode
@@ -45,7 +44,7 @@ export default class WebAudio extends EventEmitter {
   }
 
   get runtime() {
-    return this.audioContext.currentTime
+    return audioContext.currentTime
   }
 
   get duration() {
@@ -53,7 +52,7 @@ export default class WebAudio extends EventEmitter {
   }
 
   _beforePlay() {
-    const { audioContext, audioBuffer, gainNode, scriptNode } = this
+    const { audioBuffer, gainNode, scriptNode } = this
     if (this._playing) {
       this.pause()
     }
@@ -119,15 +118,6 @@ export default class WebAudio extends EventEmitter {
     this._pausedPosition = this.currentPosition
 
     this._afterPlay()
-  }
-
-  /**
-  * @param {ArrayBuffer} arrayBuffer
-  * @return {Promise<AudioBuffer>}
-  * @private
-  */
-  _decodeAudioData(arrayBuffer) {
-    return this.offlineContext.decodeAudioData(arrayBuffer)
   }
 
   /**
