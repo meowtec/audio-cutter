@@ -6,6 +6,8 @@ export default class Dragger extends PureComponent {
   handleMouseDown(e) {
     this._screenX = e.screenX
     this._screenY = e.screenY
+    this._ox = this.props.x
+    this._oy = this.props.y
 
     window.addEventListener('mousemove', this.handleMouseMove, false)
     window.addEventListener('mouseup', this.handleMouseUp, false)
@@ -13,13 +15,9 @@ export default class Dragger extends PureComponent {
 
   @autobind
   handleMouseMove(e) {
-    const prevX = this._screenX
-    const prevY = this._screenY
-    this._screenX = e.screenX
-    this._screenY = e.screenY
     this.props.onDrag({
-      x: this.props.x + this._screenX - prevX,
-      y: this.props.y + this._screenY - prevY,
+      x: e.screenX - this._screenX + this._ox,
+      y: e.screenY - this._screenY + this._oy,
     })
   }
 

@@ -46,11 +46,23 @@ export default class Player extends PureComponent {
     this.audio = audio
   }
 
+  keepInRange(x) {
+    if (x < 0) {
+      return 0
+    }
+
+    if (x > containerWidth) {
+      return containerWidth
+    }
+
+    return x
+  }
+
   audioReady() {
     const audio = this.audio
     this.setState({
       channelData: audio.channelData,
-      end: this.s2p(audio.duration)
+      end: this.s2p(audio.duration) / 2
     }, () => {
       audio.play()
     })
@@ -65,14 +77,14 @@ export default class Player extends PureComponent {
   @autobind
   dragEnd(pos) {
     this.setState({
-      end: pos.x
+      end: this.keepInRange(pos.x)
     })
   }
 
   @autobind
   dragCurrent(pos) {
     this.setState({
-      current: pos.x
+      current: this.keepInRange(pos.x)
     })
 
     this.audio.play(this.p2s(pos.x))
@@ -81,7 +93,7 @@ export default class Player extends PureComponent {
   @autobind
   dragStart(pos) {
     this.setState({
-      start: pos.x
+      start: this.keepInRange(pos.x)
     })
   }
 
