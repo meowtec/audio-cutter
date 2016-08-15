@@ -1,13 +1,24 @@
+html, body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 .wave-canvas {
-  height: 100px;
+  height: 100%;
+  position: relative;
 }
 
 .player {
   position: relative;
   width: 1200px;
+  height: 160px;
   margin: 0 auto;
   display: block;
-  background: #eee;
 }
 
 .dragger {
@@ -21,8 +32,8 @@
   &::after {
     content: '';
     position: absolute;
-    left: -1px;
-    right: -1px;
+    left: -2px;
+    right: -2px;
     top: 0;
     bottom: 0;
   }
@@ -32,8 +43,25 @@
   }
 }
 
+.selection {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: #cfe;
+}
+
 .file {
+  display: block;
+  width: 200px;
+  border: 1px dashed #eee;
+  padding: 20px;
+  text-align: center;
+  margin: 0 auto;
+  cursor: pointer;
+  color: #999;
+
   input {
     visibility: hidden;
+    position: absolute;
   }
 }

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 import Player from './player'
 import FilePicker from './file'
-import { isAudio } from './utils'
+import { isAudio, className } from './utils'
 import './index.less'
 
 class Main extends Component {
@@ -27,9 +27,13 @@ class Main extends Component {
     return (
       <div className="container">
         { this.state.file ? (
-          <Player file={this.state.file}/>
-        ) : null }
-        <FilePicker onChange={this.handleFileChange.bind(this)}>上传音频文件</FilePicker>
+          <div className="">
+            <Player file={this.state.file}/>
+            <div className="controllers"></div>
+          </div>
+        ) : (
+          <FilePicker onChange={this.handleFileChange.bind(this)}>上传音频文件</FilePicker>
+        ) }
       </div>
     )
   }

@@ -1,6 +1,9 @@
 import React, { PureComponent } from 'react'
 import getPeaks from './peaks'
 
+const containerWidth = 1200
+const containerHeight = 160
+
 const dpr = window.devicePixelRatio || 1
 
 export default class Waver extends PureComponent {
@@ -17,9 +20,9 @@ export default class Waver extends PureComponent {
    */
   repaint() {
     const ctx = this.ctx
-    ctx.clearRect(0, 0, 1200 * dpr, 100 * dpr)
+    ctx.clearRect(0, 0, containerWidth * dpr, 100 * dpr)
     console.time('peaks')
-    const peaks = getPeaks(1200 * dpr, this.props.channelData)
+    const peaks = getPeaks(containerWidth * dpr, this.props.channelData)
     console.timeEnd('peaks')
     const count = peaks.length
     for (var i = 0; i < count; i++) {
@@ -27,8 +30,8 @@ export default class Waver extends PureComponent {
       ctx.beginPath()
       ctx.lineWidth = '1'
       ctx.strokeStyle = this.props.strokeStyle
-      ctx.moveTo(i - 0.5, min * 100 + 100.5)
-      ctx.lineTo(i - 0.5, max * 100 + 99.5)
+      ctx.moveTo(i - 0.5, (min + 1) * containerHeight + 0.5)
+      ctx.lineTo(i - 0.5, (max + 1) * containerHeight - 0.5)
       ctx.stroke()
     }
   }
@@ -38,8 +41,8 @@ export default class Waver extends PureComponent {
       <canvas
         ref="canvas"
         className="wave-canvas"
-        width={ 1200 * dpr }
-        height={ 100 * dpr }
+        width={ containerWidth * dpr }
+        height={ containerHeight * dpr }
       ></canvas>
     )
   }

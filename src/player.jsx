@@ -4,6 +4,8 @@ import Dragger from './dragger'
 import WebAudio from './webaudio'
 import { autobind } from './utils'
 
+const containerWidth = 1200
+
 export default class Player extends PureComponent {
   constructor(props) {
     super(props)
@@ -22,14 +24,14 @@ export default class Player extends PureComponent {
    * seconds to pixel
    */
   s2p(s) {
-    return 1200 / this.audio.duration * s
+    return containerWidth / this.audio.duration * s
   }
 
   /**
    * pixel to seconds
    */
   p2s(p) {
-    return this.audio.duration / 1200 * p
+    return this.audio.duration / containerWidth * p
   }
 
   /**
@@ -117,10 +119,11 @@ export default class Player extends PureComponent {
 
     return (
       <div className="player">
+        <div className="selection" style={{ left: start + 'px', width: end - start + 'px'}}></div>
+        <Waver channelData={channelData}/>
         <Dragger x={start} onDrag={this.dragStart}/>
         <Dragger x={current} onDrag={this.dragCurrent}/>
         <Dragger x={end} onDrag={this.dragEnd}/>
-        <Waver channelData={channelData}/>
       </div>
     )
   }
