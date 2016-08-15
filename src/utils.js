@@ -6,6 +6,12 @@ export function isAudio(file) {
   return file.type.indexOf('audio') > -1
 }
 
+export function range(min, max) {
+  return Array
+    .apply(null, { length: max - min + 1 })
+    .map((v, i) => i + min)
+}
+
 // /**
 //  * @param {string} url
 //  * @returns {Promise<Blob>}
