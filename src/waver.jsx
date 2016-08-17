@@ -8,6 +8,18 @@ const dpr = window.devicePixelRatio || 1
 
 export default class Waver extends PureComponent {
 
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      peaks: null
+    }
+  }
+
+  componentWillMount() {
+    this.setPeaks(this.props.channelData)
+  }
+
   componentDidMount() {
     const canvas = this.refs.canvas
     const ctx = canvas.getContext('2d')
@@ -15,17 +27,34 @@ export default class Waver extends PureComponent {
     this.repaint()
   }
 
-  /**
-   * TODO: repaint
-   */
-  repaint() {
-    const ctx = this.ctx
-    ctx.clearRect(0, 0, containerWidth * dpr, 100 * dpr)
+  componentWillReceiveProps(nextProps) {
+    if (this.props.channelData !== nextProps.channelData) {
+      this.setPeaks(nextProps.channelData)
+    }
+  }
+
+  componentDidUpdate() {
+    this.repaint()
+  }
+
+  setPeaks(channelData) {
     console.time('peaks')
-    const peaks = getPeaks(containerWidth * dpr, this.props.channelData)
+    const peaks = getPeaks(containerWidth * dpr, channelData)
     console.timeEnd('peaks')
+
+    this.setState({
+      peaks
+    })
+  }
+
+  repaint() {
+    const { ctx } = this
+    const peaks = this.state.peaks
     const count = peaks.length
-    for (var i = 0; i < count; i++) {
+
+    ctx.clearRect(0, 0, containerWidth * dpr, containerHeight * dpr)
+
+    for (var i = 0; i < count; i+=2) {
       const [min, max] = peaks[i]
       ctx.beginPath()
       ctx.lineWidth = '1'

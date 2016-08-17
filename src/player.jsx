@@ -23,27 +23,36 @@ export default class Player extends PureComponent {
   /**
    * seconds to pixel
    */
-  s2p(s) {
-    return containerWidth / this.audio.duration * s
+  get widthDurationRatio() {
+    return containerWidth / this.audio.duration
+  }
+  // s2p(s) {
+  //   return containerWidth / this.audio.duration * s
+  // }
+
+  // /**
+  //  * pixel to seconds
+  //  */
+  // p2s(p) {
+  //   return this.audio.duration / containerWidth * p
+  // }
+
+  clean() {
+    const { audio } = this
+    if (!audio) {
+      return
+    }
+
+    audio.destroy()
   }
 
-  /**
-   * pixel to seconds
-   */
-  p2s(p) {
-    return this.audio.duration / containerWidth * p
-  }
-
-  /**
-   * TODO: on file update
-   */
   reinit() {
+    this.clean()
+
     const audio = new WebAudio(this.props.file)
-
     audio.repeat = true
-
-    audio.init().then(this.audioReady.bind(this))
-    audio.on('process', this.audioProcess.bind(this))
+    audio.init().then(this.audioReady)
+    audio.on('process', this.audioProcess)
 
     this.audio = audio
   }
@@ -60,19 +69,21 @@ export default class Player extends PureComponent {
     return x
   }
 
+  @autobind
   audioReady() {
     const audio = this.audio
     this.setState({
       channelData: audio.channelData,
-      end: this.s2p(audio.duration) / 2
+      end: this.widthDurationRatio * audio.duration / 2
     }, () => {
       audio.play()
     })
   }
 
+  @autobind
   audioProcess(current) {
     this.setState({
-      current: this.s2p(current)
+      current: this.widthDurationRatio * current
     })
   }
 
@@ -89,7 +100,7 @@ export default class Player extends PureComponent {
       current: this.keepInRange(pos.x)
     })
 
-    this.audio.play(this.p2s(pos.x))
+    this.audio.play(pos.x / this.widthDurationRatio)
   }
 
   @autobind
@@ -99,9 +110,13 @@ export default class Player extends PureComponent {
     })
   }
 
-  componentDidUpdate(_, prevState) {
-    this.audio.startPosition = this.p2s(this.state.start)
-    this.audio.endPosition = this.p2s(this.state.end)
+  componentDidUpdate(prevProps, prevState) {
+    this.audio.startPosition = this.state.start / this.widthDurationRatio
+    this.audio.endPosition = this.state.end / this.widthDurationRatio
+
+    if (this.props.file !== prevProps.file) {
+      this.reinit()
+    }
   }
 
   render() {
@@ -111,8 +126,8 @@ export default class Player extends PureComponent {
 
     if (!channelData) {
       return (
-        <div className="player">
-          DECODING
+        <div className="player player-landing">
+          正在解码中...
         </div>
       )
     }

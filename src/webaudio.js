@@ -130,4 +130,10 @@ export default class WebAudio extends EventEmitter {
     return audioBuffer.getChannelData(0)
   }
 
+  destroy() {
+    this._afterPlay()
+    this.gainNode.disconnect()
+    this.removeAllListeners()
+  }
+
 }
