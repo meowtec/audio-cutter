@@ -21,6 +21,14 @@ body {
   display: block;
 }
 
+.player-landing {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border: 1px dashed #ccc;
+}
+
 .dragger {
   position: absolute;
   top: 0;
@@ -47,21 +55,51 @@ body {
   position: absolute;
   top: 0;
   bottom: 0;
-  background: #cfe;
+  background: #e8fff7;
+}
+
+.landing {
+  padding-bottom: 100px;
+
+  h2 {
+    padding: 0;
+    margin: 0;
+    text-align: center;
+    color: #ccc;
+    font-size: 40px;
+    margin-bottom: 40px;
+  }
 }
 
 .file {
   display: block;
-  width: 200px;
-  border: 1px dashed #eee;
-  padding: 20px;
-  text-align: center;
   margin: 0 auto;
+  padding: 20px;
+  width: 200px;
+  text-align: center;
   cursor: pointer;
   color: #999;
+  border: 1px dashed #ddd;
+  transition: 0.3s;
 
   input {
     visibility: hidden;
     position: absolute;
   }
+
+  .icon {
+    margin: 0 5px;
+  }
+
+  &:hover {
+    color: #0cf;
+    border-color: #0cf;
+  }
+}
+
+.icon {
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+  vertical-align: middle;
 }

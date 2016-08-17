@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 import Player from './player'
 import FilePicker from './file'
+import Icon from './icon'
 import { isAudio, className } from './utils'
 import './index.less'
 
@@ -26,14 +27,28 @@ class Main extends Component {
   render() {
     return (
       <div className="container">
-        { this.state.file ? (
-          <div className="">
-            <Player file={this.state.file}/>
-            <div className="controllers"></div>
-          </div>
-        ) : (
-          <FilePicker onChange={this.handleFileChange.bind(this)}>上传音频文件</FilePicker>
-        ) }
+        {
+          this.state.file ? (
+            <div className="">
+              <h2>Audio Cutter</h2>
+              <Player file={this.state.file}/>
+              <div className="controllers">
+                <FilePicker onChange={this.handleFileChange.bind(this)}>
+                  <Icon name="music"/>
+                  选择音乐文件
+                </FilePicker>
+              </div>
+            </div>
+          ) : (
+            <div className="landing">
+              <h2>Audio Cutter</h2>
+              <FilePicker onChange={this.handleFileChange.bind(this)}>
+                <Icon name="music"/>
+                选择音乐文件
+              </FilePicker>
+            </div>
+          )
+        }
       </div>
     )
   }

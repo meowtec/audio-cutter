@@ -12,8 +12,19 @@ module.exports = {
   },
   module: {
     loaders: [
-      { test: /\.less$/, loader: 'style!css!less' },
-      { test: /\.jsx?$/, loader: 'babel', exclude: /node_modules/ },
+      {
+        test: /\.less$/,
+        loader: 'style!css!less'
+      },
+      {
+        test: /\.jsx?$/,
+        loader: 'babel',
+        exclude: /node_modules/
+      },
+      {
+        test: /\.svg$/,
+        loader: path.resolve(__dirname, 'build/svg-spirit-loader')
+      }
     ]
   },
   devServer: {
