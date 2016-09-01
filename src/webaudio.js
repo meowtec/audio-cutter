@@ -18,6 +18,7 @@ export default class WebAudio extends EventEmitter {
     this.channelData = channelData
 
     this._initAudioComponent()
+    this.prepared = true
     return this
   }
 
@@ -103,6 +104,8 @@ export default class WebAudio extends EventEmitter {
   }
 
   play(start = this.currentPosition) {
+    if (!this.prepared) return
+
     this._beforePlay()
 
     const source = this.source
@@ -113,6 +116,8 @@ export default class WebAudio extends EventEmitter {
   }
 
   pause() {
+    if (!this.prepared) return
+
     const source = this.source
     this.source.stop()
     this._pausedPosition = this.currentPosition

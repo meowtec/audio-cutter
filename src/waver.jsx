@@ -1,8 +1,6 @@
 import React, { PureComponent } from 'react'
 import getPeaks from './peaks'
-
-const containerWidth = 1200
-const containerHeight = 160
+import Color from 'color'
 
 const dpr = window.devicePixelRatio || 1
 
@@ -39,7 +37,7 @@ export default class Waver extends PureComponent {
 
   setPeaks(channelData) {
     console.time('peaks')
-    const peaks = getPeaks(containerWidth * dpr, channelData)
+    const peaks = getPeaks(this.props.width * dpr, channelData)
     console.timeEnd('peaks')
 
     this.setState({
@@ -51,16 +49,28 @@ export default class Waver extends PureComponent {
     const { ctx } = this
     const peaks = this.state.peaks
     const count = peaks.length
+    const height = this.props.height
+    const centerY = this.props.height / 2 * dpr
+    const color = this.props.color
+    const lightColor = Color(color).lighten(0.2).hexString()
 
-    ctx.clearRect(0, 0, containerWidth * dpr, containerHeight * dpr)
+    ctx.lineWidth = 1
+    ctx.clearRect(0, 0, this.props.width * dpr, this.props.height * dpr)
 
     for (var i = 0; i < count; i+=2) {
       const [min, max] = peaks[i]
+      const x = i - 0.5
+
       ctx.beginPath()
-      ctx.lineWidth = '1'
-      ctx.strokeStyle = this.props.strokeStyle
-      ctx.moveTo(i - 0.5, (min + 1) * containerHeight + 0.5)
-      ctx.lineTo(i - 0.5, (max + 1) * containerHeight - 0.5)
+      ctx.strokeStyle = color
+      ctx.moveTo(x, ((min + 1) * height) + 0.5)
+      ctx.lineTo(x, centerY)
+      ctx.stroke()
+
+      ctx.beginPath()
+      ctx.strokeStyle = lightColor
+      ctx.moveTo(x, centerY)
+      ctx.lineTo(x, ((max + 1) * height) + 0.5)
       ctx.stroke()
     }
   }
@@ -70,8 +80,12 @@ export default class Waver extends PureComponent {
       <canvas
         ref="canvas"
         className="wave-canvas"
-        width={ containerWidth * dpr }
-        height={ containerHeight * dpr }
+        style={{
+          width: this.props.width + 'px',
+          height: this.props.height + 'px'
+        }}
+        width={ this.props.width * dpr }
+        height={ this.props.height * dpr }
       ></canvas>
     )
   }
@@ -79,6 +93,6 @@ export default class Waver extends PureComponent {
 }
 
 Waver.defaultProps = {
-  strokeStyle: '#c9f',
+  color: '#aaa',
   channelData: null
 }

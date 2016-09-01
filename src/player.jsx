@@ -4,7 +4,12 @@ import Dragger from './dragger'
 import WebAudio from './webaudio'
 import { autobind } from './utils'
 
-const containerWidth = 1200
+const containerWidth = 1000
+const containerHeight = 160
+
+function getClipRect(start, end) {
+  return `rect(0, ${end}px, ${containerHeight}px, ${start}px)`
+}
 
 export default class Player extends PureComponent {
   constructor(props) {
@@ -20,22 +25,9 @@ export default class Player extends PureComponent {
     this.reinit()
   }
 
-  /**
-   * seconds to pixel
-   */
   get widthDurationRatio() {
     return containerWidth / this.audio.duration
   }
-  // s2p(s) {
-  //   return containerWidth / this.audio.duration * s
-  // }
-
-  // /**
-  //  * pixel to seconds
-  //  */
-  // p2s(p) {
-  //   return this.audio.duration / containerWidth * p
-  // }
 
   clean() {
     const { audio } = this
@@ -134,10 +126,14 @@ export default class Player extends PureComponent {
 
     return (
       <div className="player">
-        <div className="selection" style={{ left: start + 'px', width: end - start + 'px'}}></div>
-        <Waver channelData={channelData}/>
+        <div className="clipper">
+          <Waver channelData={channelData} width={containerWidth} height={containerHeight}/>
+        </div>
+        <div className="clipper" style={{ clip: getClipRect(start, end) }}>
+          <Waver channelData={channelData} width={containerWidth} height={containerHeight} color="#0cf"/>
+        </div>
         <Dragger x={start} onDrag={this.dragStart}/>
-        <Dragger x={current} onDrag={this.dragCurrent}/>
+        <Dragger className="drag-current" x={current} onDrag={this.dragCurrent}/>
         <Dragger x={end} onDrag={this.dragEnd}/>
       </div>
     )

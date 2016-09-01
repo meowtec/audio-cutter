@@ -65,10 +65,20 @@ export function autobind(target, key, descriptor) {
   }
 }
 
-function objectToClassName(obj) {
+function isObject(obj) {
+  return Object.prototype.toString.call(obj) === '[object Object]'
+}
+
+function objectClassName(obj) {
   return Object.keys(obj).reduce((prev, key) => {
     return obj[key] ? (prev + ' ' + key) : prev
   }, '')
+}
+
+function arrayClassName(arr) {
+  return arr.map(value => {
+    return isObject(value) ? objectClassName(value) : value
+  }).join(' ')
 }
 
 /**
@@ -77,11 +87,5 @@ function objectToClassName(obj) {
  * className('button', 'primary', { disabled: true })
  */
 export function className(...args) {
-  return args.reduce((prev, value) => {
-    if (typeof value === 'string') {
-      return prev + ' ' + value
-    } else {
-      return prev + ' ' + objectToClassName(value)
-    }
-  }, '')
+  return arrayClassName(args)
 }

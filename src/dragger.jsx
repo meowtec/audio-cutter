@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react'
-import { autobind } from './utils'
+import { autobind, className } from './utils'
 
 export default class Dragger extends PureComponent {
   @autobind
@@ -29,7 +29,7 @@ export default class Dragger extends PureComponent {
 
   render() {
     return (
-      <div className="dragger"
+      <div className={className('dragger', this.props.className)}
         onMouseDown={this.handleMouseDown.bind(this)}
         style={{
           left: this.props.x + 'px',

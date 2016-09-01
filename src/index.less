@@ -8,17 +8,40 @@ body {
   justify-content: center;
 }
 
-.wave-canvas {
-  height: 100%;
+.btn-reset {
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: none;
+}
+
+.container {
   position: relative;
+  width: 1000px;
+  margin: 0 auto;
+}
+
+.app-title {
+  position: absolute;
+  text-align: center;
+  color: #ccc;
+  font-size: 40px;
+  left: 0;
+  right: 0;
+  top: -135px;
 }
 
 .player {
   position: relative;
-  width: 1200px;
-  height: 160px;
   margin: 0 auto;
+  height: 160px;
   display: block;
+  box-shadow: 0 0 30px rgba(0,0,0,.1);
+
+  .wave-canvas {
+    position: absolute;
+    clip: rect(0, 0, 0, 0);
+  }
 }
 
 .player-landing {
@@ -26,7 +49,6 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  border: 1px dashed #ccc;
 }
 
 .dragger {
@@ -34,7 +56,7 @@ body {
   top: 0;
   bottom: 0;
   width: 1px;
-  background: #666;
+  background: #999;
   cursor: col-resize;
 
   &::after {
@@ -51,11 +73,8 @@ body {
   }
 }
 
-.selection {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  background: #e8fff7;
+.drag-current {
+  background: #0cf;
 }
 
 .landing {
@@ -92,8 +111,8 @@ body {
   }
 
   &:hover {
-    color: #0cf;
-    border-color: #0cf;
+    color: #6ac;
+    border-color: #6ac;
   }
 }
 
@@ -102,4 +121,69 @@ body {
   height: 1em;
   fill: currentColor;
   vertical-align: middle;
+}
+
+.ctrl-item {
+  &:extend(.btn-reset);
+
+  display: inline-block;
+  font-size: 14px;
+  text-align: center;
+  color: #999;
+  padding: 5px;
+
+  + .ctrl-item {
+    margin-left: 10px;
+  }
+}
+
+.dropdown {
+  display: inline-block;
+
+  .ctrl-item {
+    margin-left: 5px;
+  }
+
+  .list-wrap {
+    position: relative;
+  }
+
+  .list {
+    position: absolute;
+    width: 60px;
+    top: 0;
+    visibility: hidden;
+    opacity: 0;
+    transition-duration: .3s;
+    transition-property: opacity, visibility;
+    list-style: none;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    padding: 0;
+    margin: 0;
+
+    button {
+      &:extend(.btn-reset);
+
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 5px 0;
+      color: inherit;
+
+      &:hover {
+        background: #eee;
+      }
+    }
+  }
+
+  &:hover .list {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.clipper {
+  position: absolute;
+  width: 100%;
+  height: 100%;
 }
