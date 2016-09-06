@@ -57,7 +57,7 @@ export default class Waver extends PureComponent {
     ctx.lineWidth = 1
     ctx.clearRect(0, 0, this.props.width * dpr, this.props.height * dpr)
 
-    for (var i = 0; i < count; i+=2) {
+    for (var i = 0; i < count; i++) {
       const [min, max] = peaks[i]
       const x = i - 0.5
 

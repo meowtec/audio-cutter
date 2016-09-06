@@ -6,20 +6,24 @@
  */
 function getMinMaxInRange(array, start, end) {
   let min = 0
+  let min1 = 0
   let max = 0
+  let max1 = 0
   let current
-  let step = parseInt((end - start) / 20)
+  let step = parseInt((end - start) / 15)
 
   for (var i = start; i < end; i = i + step) {
     current = array[i]
     if (current < min) {
+      min1 = min
       min = current
     } else if (current > max) {
+      max1 = max
       max = current
     }
   }
 
-  return [min, max]
+  return [(min + min1) / 2, (max + max1) / 2]
 }
 
 /**

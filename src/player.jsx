@@ -131,7 +131,7 @@ export default class Player extends PureComponent {
     if (!channelData) {
       return (
         <div className="player player-landing">
-          正在解码中...
+          DECODING...
         </div>
       )
     }
