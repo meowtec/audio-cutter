@@ -91,6 +91,13 @@ body {
 }
 
 .file {
+  input {
+    visibility: hidden;
+    position: absolute;
+  }
+}
+
+.file-main {
   display: block;
   margin: 0 auto;
   padding: 20px;
@@ -100,11 +107,7 @@ body {
   color: #999;
   border: 1px dashed #ddd;
   transition: 0.3s;
-
-  input {
-    visibility: hidden;
-    position: absolute;
-  }
+  background: none;
 
   .icon {
     margin: 0 5px;

@@ -130,7 +130,6 @@ export default class WebAudio extends EventEmitter {
   }
 
   set position(pos) {
-    console.log(pos, this.paused)
     if (this.paused) {
       this._pausedPosition = pos
     } else {

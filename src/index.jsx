@@ -60,9 +60,11 @@ class Main extends Component {
                 file={this.state.file}
               />
               <div className="controllers">
-                <button className="ctrl-item">
-                  <Icon name="music"/>
-                </button>
+                <FilePicker onChange={this.handleFileChange.bind(this)}>
+                  <div className="ctrl-item">
+                    <Icon name="music"/>
+                  </div>
+                </FilePicker>
                 <button className="ctrl-item" onClick={this.handlePlayPauseClick}>
                   <Icon name={ this.state.paused ? 'play' : 'pause' }/>
                 </button>
@@ -84,8 +86,10 @@ class Main extends Component {
             <div className="landing">
               <h2>Audio Cutter</h2>
               <FilePicker onChange={this.handleFileChange.bind(this)}>
-                <Icon name="music"/>
-                选择音乐文件
+                <div className="file-main">
+                  <Icon name="music"/>
+                  选择音乐文件
+                </div>
               </FilePicker>
             </div>
           )

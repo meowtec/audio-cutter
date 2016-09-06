@@ -66,6 +66,7 @@ export default class Player extends PureComponent {
     const audio = this.audio
     this.setState({
       channelData: audio.channelData,
+      start: 0,
       end: this.widthDurationRatio * audio.duration / 2
     }, () => {
       this.play()
