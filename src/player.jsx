@@ -68,7 +68,7 @@ export default class Player extends PureComponent {
       channelData: audio.channelData,
       end: this.widthDurationRatio * audio.duration / 2
     }, () => {
-      audio.play()
+      this.play()
     })
   }
 
@@ -88,11 +88,12 @@ export default class Player extends PureComponent {
 
   @autobind
   dragCurrent(pos) {
+    const fixedX = this.keepInRange(pos.x)
     this.setState({
-      current: this.keepInRange(pos.x)
+      current: fixedX
     })
 
-    this.audio.play(pos.x / this.widthDurationRatio)
+    this.audio.position = fixedX / this.widthDurationRatio
   }
 
   @autobind
@@ -109,6 +110,16 @@ export default class Player extends PureComponent {
     if (this.props.file !== prevProps.file) {
       this.reinit()
     }
+  }
+
+  play(...args) {
+    this.audio.play(...args)
+    this.props.onPlay()
+  }
+
+  pause() {
+    this.audio.pause()
+    this.props.onPause()
   }
 
   render() {

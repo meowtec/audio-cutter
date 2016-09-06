@@ -26,23 +26,24 @@ class Main extends Component {
     })
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    const paused = this.state.paused
-    const audio = this.refs.player
-    if (prevState.paused !== paused) {
-      if (paused) {
-        audio.audio.pause()
-      } else {
-        audio.audio.play()
-      }
-    }
+  @autobind
+  handlePlayerPause() {
+    this.setState({
+      paused: true
+    })
+  }
+
+  @autobind
+  handlePlayerPlay() {
+    this.setState({
+      paused: false
+    })
   }
 
   @autobind
   handlePlayPauseClick(file) {
-    this.setState({
-      paused: !this.state.paused
-    })
+    const player = this.refs.player
+    this.state.paused ? player.play() : player.pause()
   }
 
   render() {
@@ -52,7 +53,12 @@ class Main extends Component {
           this.state.file ? (
             <div>
               <h2 className="app-title">Audio Cutter</h2>
-              <Player ref="player" file={this.state.file}/>
+              <Player
+                onPause={this.handlePlayerPause}
+                onPlay={this.handlePlayerPlay}
+                ref="player"
+                file={this.state.file}
+              />
               <div className="controllers">
                 <button className="ctrl-item">
                   <Icon name="music"/>

@@ -52,6 +52,10 @@ export default class WebAudio extends EventEmitter {
     return this.audioBuffer.duration
   }
 
+  get paused() {
+    return !this._playing
+  }
+
   _beforePlay() {
     const { audioBuffer, gainNode, scriptNode } = this
     if (this._playing) {
@@ -123,6 +127,15 @@ export default class WebAudio extends EventEmitter {
     this._pausedPosition = this.currentPosition
 
     this._afterPlay()
+  }
+
+  set position(pos) {
+    console.log(pos, this.paused)
+    if (this.paused) {
+      this._pausedPosition = pos
+    } else {
+      this.play(pos)
+    }
   }
 
   /**
