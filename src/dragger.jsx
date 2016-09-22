@@ -35,7 +35,7 @@ export default class Dragger extends PureComponent {
           left: this.props.x + 'px',
           top: this.props.y + 'px',
       }}>
-
+        {this.props.children}
       </div>
     )
   }

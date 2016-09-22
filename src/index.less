@@ -145,10 +145,6 @@ body {
 .dropdown {
   display: inline-block;
 
-  .ctrl-item {
-    margin-left: 5px;
-  }
-
   .list-wrap {
     position: relative;
   }
@@ -191,4 +187,28 @@ body {
   position: absolute;
   width: 100%;
   height: 100%;
+}
+
+.cursor-current {
+  @cursorColor: #0cf;
+
+  position: absolute;
+  font-size: 12px;
+  top: -22px;
+  padding: 1px 3px;
+  font-family: monospace;
+  text-align: center;
+  color: #fff;
+  transform: translate(-50%) scale(0.8);
+  background: @cursorColor;
+
+  &::after {
+    content: '';
+    position: absolute;
+    border: 5px solid transparent;
+    border-top-color: #0cf;
+    bottom: -9px;
+    left: 50%;
+    margin-left: -5px;
+  }
 }

@@ -152,6 +152,8 @@ export default class Player extends PureComponent {
       )
     }
 
+    const currentSeconds = current / this.widthDurationRatio
+
     return (
       <div className="player">
         <div className="clipper">
@@ -161,7 +163,9 @@ export default class Player extends PureComponent {
           <Waver channelData={channelData} width={containerWidth} height={containerHeight} color="#0cf"/>
         </div>
         <Dragger x={start} onDrag={this.dragStart}/>
-        <Dragger className="drag-current" x={current} onDrag={this.dragCurrent}/>
+        <Dragger className="drag-current" x={current} onDrag={this.dragCurrent}>
+          <div className="cursor-current">{currentSeconds.toFixed(2)}</div>
+        </Dragger>
         <Dragger x={end} onDrag={this.dragEnd}/>
       </div>
     )
