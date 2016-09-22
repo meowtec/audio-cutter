@@ -32,17 +32,33 @@ export function range(min, max) {
 // }
 
 /**
+ * FileReader via promise
+ * @param {File} file
+ * @param {string} dataType
+ * @return {Promise<ArrayBuffer | string>}
+ */
+export function readFile(file, dataType) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader['readAs' + dataType](file)
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = err => reject(err)
+  })
+}
+
+/**
  * Read File/Blob to ArrayBuffer
  * @param {File} file
  * @return {Promise<ArrayBuffer>}
  */
-export function readArrayBuffer(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.readAsArrayBuffer(file)
-    reader.onload = () => resolve(reader.result)
-  })
-}
+export const readArrayBuffer = file => readFile(file, 'ArrayBuffer')
+
+/**
+ * Read File/Blob to Base64
+ * @param {File} file
+ * @return {Promise<string>}
+ */
+export const readDataURL = file => readFile(file, 'DataURL')
 
 /**
  * decorators
@@ -88,4 +104,11 @@ function arrayClassName(arr) {
  */
 export function className(...args) {
   return arrayClassName(args)
+}
+
+export function download(url, name) {
+  const link = document.createElement('a')
+  link.href = url
+  link.download = name
+  link.click()
 }

@@ -9,28 +9,28 @@ import { range } from './utils'
 * @param {AudioBuffer} audioBuffer
 * @return {Promise<Blob>}
 */
-export default function encodeAudioBuffer(audioBuffer, slice) {
-  const channelNum = audioBuffer.numberOfChannels
-  const channelDatas = range(0, channelNum - 1)
-    .map(i => audioBuffer.getChannelData(i))
+export default function encodeAudioBuffer(audioBuffer) {
+  return new Promise(resolve => {
+    const channelNum = audioBuffer.numberOfChannels
+    const channelDatas = range(0, channelNum - 1)
+      .map(i => audioBuffer.getChannelData(i))
 
-  // const interleaved = channelNum > 1 ? interleave(channelDatas[0], channelDatas[1]) : channelDatas[0]
-  const interleave = interleave(channelDatas, slice)
-  const dataview = encodeWAV(interleaved, channelNum, audioBuffer.sampleRate)
-  const audioBlob = new Blob([dataview], { type: 'audio/wav' })
+    // const interleaved = channelNum > 1 ? interleave(channelDatas[0], channelDatas[1]) : channelDatas[0]
+    const interleaved = interleave(channelDatas)
+    const dataview = encodeWAV(interleaved, channelNum, audioBuffer.sampleRate)
+    const audioBlob = new Blob([dataview], { type: 'audio/wav' })
 
-  return audioBlob
+    resolve(audioBlob)
+  })
 }
 
 /**
 * @param {Float32Array} inputL
 * @param {Float32Array} inputR
 */
-function interleave(inputs, slice){
-  if (length === 1) {
-    if (slice === null) {
-      return inputs[0]
-    }
+function interleave(inputs){
+  if (inputs.length === 1) {
+    return inputs[0]
   } else {
     const inputL = inputs[0]
     const inputR = inputs

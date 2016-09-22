@@ -3,7 +3,9 @@ import ReactDOM from 'react-dom'
 import Player from './player'
 import FilePicker from './file'
 import Icon from './icon'
-import { isAudio, className, autobind } from './utils'
+import { isAudio, className, autobind, readDataURL, download } from './utils'
+import { sliceAudioBuffer } from './audio-helper'
+import encoder from './encoder'
 import './index.less'
 
 class Main extends Component {
@@ -46,6 +48,17 @@ class Main extends Component {
     this.state.paused ? player.play() : player.pause()
   }
 
+  handleEncode(type) {
+    const player = this.refs.player
+    const audioSliced = sliceAudioBuffer(player.audioBuffer, player.startByte, player.endByte)
+    encoder
+      .wav(audioSliced)
+      .then(readDataURL)
+      .then(url => {
+        download(url, 'a.wav')
+      })
+  }
+
   render() {
     return (
       <div className="container">
@@ -74,7 +87,7 @@ class Main extends Component {
                   </button>
                   <div className="list-wrap">
                     <ul className="list">
-                      <li><button>Wav</button></li>
+                      <li><button onClick={this.handleEncode.bind(this, 'wav')}>Wav</button></li>
                       <li><button>MP3</button></li>
                       <li><button>M4R</button></li>
                     </ul>

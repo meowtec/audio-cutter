@@ -29,6 +29,22 @@ export default class Player extends PureComponent {
     return containerWidth / this.audio.duration
   }
 
+  get audioBuffer() {
+    return this.audio.audioBuffer
+  }
+
+  get startByte() {
+    return parseInt(this.audioBuffer.length * this.state.start / this.widthDurationRatio / this.duration, 10)
+  }
+
+  get endByte() {
+    return parseInt(this.audioBuffer.length * this.state.end / this.widthDurationRatio / this.duration, 10)
+  }
+
+  get duration() {
+    return this.audio.duration
+  }
+
   clean() {
     const { audio } = this
     if (!audio) {
