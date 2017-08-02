@@ -1,32 +1,36 @@
 import React, { PureComponent } from 'react'
-import { autobind } from './utils'
+import PropTypes from 'prop-types'
 
 export default class FilePicker extends PureComponent {
-  constructor() {
+  constructor () {
     super()
     this.state = {
-      key: 0
+      key: 0,
     }
   }
 
-  @autobind
-  handleChange() {
+  handleChange = () => {
     this.props.onChange(this.refs.file.files[0])
     this.setState({
-      key: this.state.key + 1
+      key: this.state.key + 1,
     })
   }
 
-  render() {
+  render () {
     return (
-      <label className="file">
+      <label className='file'>
         { this.props.children }
-        <input type="file" key={this.state.key} ref="file" onChange={this.handleChange}/>
+        <input type='file' key={this.state.key} ref='file' onChange={this.handleChange} />
       </label>
     )
   }
-}
 
-FilePicker.defaultProps = {
-  onChange() {}
+  static defaultProps = {
+    onChange () {},
+  }
+
+  static propTypes = {
+    onChange: PropTypes.func,
+    children: PropTypes.element,
+  }
 }

@@ -2,11 +2,11 @@
  * detect if a file is an audio.
  * @param {File} file
  */
-export function isAudio(file) {
+export function isAudio (file) {
   return file.type.indexOf('audio') > -1
 }
 
-export function range(min, max) {
+export function range (min, max) {
   return Array
     .apply(null, { length: max - min + 1 })
     .map((v, i) => i + min)
@@ -37,7 +37,7 @@ export function range(min, max) {
  * @param {string} dataType
  * @return {Promise<ArrayBuffer | string>}
  */
-export function readFile(file, dataType) {
+export function readFile (file, dataType) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader['readAs' + dataType](file)
@@ -60,53 +60,7 @@ export const readArrayBuffer = file => readFile(file, 'ArrayBuffer')
  */
 export const readDataURL = file => readFile(file, 'DataURL')
 
-/**
- * decorators
- * bind class instance as `this` to method automatically.
- * @example
- * class Component {
- *   @autobind
- *   handleButtonClick() {}
- * }
- */
-export function autobind(target, key, descriptor) {
-  return {
-    get() {
-      const fun = descriptor.value.bind(this)
-      Object.defineProperty(this, key, {
-        value: fun
-      })
-      return fun
-    }
-  }
-}
-
-function isObject(obj) {
-  return Object.prototype.toString.call(obj) === '[object Object]'
-}
-
-function objectClassName(obj) {
-  return Object.keys(obj).reduce((prev, key) => {
-    return obj[key] ? (prev + ' ' + key) : prev
-  }, '')
-}
-
-function arrayClassName(arr) {
-  return arr.map(value => {
-    return isObject(value) ? objectClassName(value) : value
-  }).join(' ')
-}
-
-/**
- * className for human
- * @example
- * className('button', 'primary', { disabled: true })
- */
-export function className(...args) {
-  return arrayClassName(args)
-}
-
-export function download(url, name) {
+export function download (url, name) {
   const link = document.createElement('a')
   link.href = url
   link.download = name

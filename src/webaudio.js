@@ -1,14 +1,14 @@
 import { EventEmitter } from 'events'
-import { readArrayBuffer, autobind } from './utils'
-import { audioContext, sliceAudioBuffer, decodeAudioArrayBuffer } from './audio-helper'
+import { readArrayBuffer } from './utils'
+import { audioContext, decodeAudioArrayBuffer } from './audio-helper'
 
 export default class WebAudio extends EventEmitter {
-  constructor(file) {
+  constructor (file) {
     super()
     this.blob = file
   }
 
-  async init() {
+  async init () {
     const arrayBuffer = await readArrayBuffer(this.blob)
     const audioBuffer = await decodeAudioArrayBuffer(arrayBuffer)
     const channelData = await this._getDefaultChannelData(audioBuffer)
@@ -22,8 +22,7 @@ export default class WebAudio extends EventEmitter {
     return this
   }
 
-  _initAudioComponent() {
-    const { audioBuffer } = this
+  _initAudioComponent () {
     const gainNode = audioContext.createGain()
     gainNode.connect(audioContext.destination)
 
@@ -34,7 +33,7 @@ export default class WebAudio extends EventEmitter {
     this.scriptNode = scriptNode
   }
 
-  get currentPosition() {
+  get currentPosition () {
     if (this._startTime == null) {
       return this.startPosition || 0
     }
@@ -44,19 +43,19 @@ export default class WebAudio extends EventEmitter {
     return this.runtime - this._startTime + this._startPosition
   }
 
-  get runtime() {
+  get runtime () {
     return audioContext.currentTime
   }
 
-  get duration() {
+  get duration () {
     return this.audioBuffer.duration
   }
 
-  get paused() {
+  get paused () {
     return !this._playing
   }
 
-  _beforePlay() {
+  _beforePlay () {
     const { audioBuffer, gainNode, scriptNode } = this
     if (this._playing) {
       this.pause()
@@ -73,19 +72,17 @@ export default class WebAudio extends EventEmitter {
     this._playing = true
   }
 
-  _afterPlay() {
+  _afterPlay () {
     this.source.disconnect()
     this.scriptNode.disconnect()
     this._playing = false
   }
 
-  @autobind
-  _onended() {
+  _onended = () => {
     this._end(true)
   }
 
-  @autobind
-  _onprocess() {
+  _onprocess = () => {
     const currentPosition = this.currentPosition
     this.emit('process', currentPosition)
 
@@ -94,7 +91,7 @@ export default class WebAudio extends EventEmitter {
     }
   }
 
-  _end(EOF) {
+  _end (EOF) {
     this.pause()
     this.emit('end', EOF)
 
@@ -103,11 +100,11 @@ export default class WebAudio extends EventEmitter {
     }
   }
 
-  _replay() {
+  _replay () {
     this.play(this.startPosition || 0)
   }
 
-  play(start = this.currentPosition) {
+  play (start = this.currentPosition) {
     if (!this.prepared) return
 
     this._beforePlay()
@@ -119,17 +116,16 @@ export default class WebAudio extends EventEmitter {
     source.start(0, start, this.duration)
   }
 
-  pause() {
+  pause () {
     if (!this.prepared) return
 
-    const source = this.source
     this.source.stop()
     this._pausedPosition = this.currentPosition
 
     this._afterPlay()
   }
 
-  set position(pos) {
+  set position (pos) {
     if (this.paused) {
       this._pausedPosition = pos
     } else {
@@ -142,15 +138,14 @@ export default class WebAudio extends EventEmitter {
   * @return {Float32Array}
   * @private
   */
-  _getDefaultChannelData(audioBuffer) {
+  _getDefaultChannelData (audioBuffer) {
     this.audioBuffer = audioBuffer
     return audioBuffer.getChannelData(0)
   }
 
-  destroy() {
+  destroy () {
     this._afterPlay()
     this.gainNode.disconnect()
     this.removeAllListeners()
   }
-
 }

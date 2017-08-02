@@ -1,9 +1,14 @@
 import React, { PureComponent } from 'react'
-import { autobind, className } from './utils'
+import PropTypes from 'prop-types'
+import classnames from 'classnames'
 
 export default class Dragger extends PureComponent {
-  @autobind
-  handleMouseDown(e) {
+  _screenX = null
+  _screenY = null
+  _ox = null
+  _oy = null
+
+  handleMouseDown = (e) => {
     this._screenX = e.screenX
     this._screenY = e.screenY
     this._ox = this.props.x
@@ -13,36 +18,42 @@ export default class Dragger extends PureComponent {
     window.addEventListener('mouseup', this.handleMouseUp, false)
   }
 
-  @autobind
-  handleMouseMove(e) {
+  handleMouseMove = (e) => {
     this.props.onDrag({
       x: e.screenX - this._screenX + this._ox,
       y: e.screenY - this._screenY + this._oy,
     })
   }
 
-  @autobind
-  handleMouseUp() {
+  handleMouseUp = () => {
     window.removeEventListener('mousemove', this.handleMouseMove)
     window.removeEventListener('mouseup', this.handleMouseUp)
   }
 
-  render() {
+  render () {
     return (
-      <div className={className('dragger', this.props.className)}
-        onMouseDown={this.handleMouseDown.bind(this)}
+      <div className={classnames('dragger', this.props.className)}
+        onMouseDown={this.handleMouseDown}
         style={{
           left: this.props.x + 'px',
           top: this.props.y + 'px',
-      }}>
+        }}>
         {this.props.children}
       </div>
     )
   }
-}
 
-Dragger.defaultProps = {
-  onDrag() {},
-  x: 0,
-  y: 0,
+  static defaultProps = {
+    onDrag () {},
+    x: 0,
+    y: 0,
+  }
+
+  static propTypes = {
+    x: PropTypes.number,
+    y: PropTypes.number,
+    onDrag: PropTypes.func,
+    className: PropTypes.string,
+    children: PropTypes.element,
+  }
 }

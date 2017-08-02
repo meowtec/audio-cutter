@@ -4,7 +4,7 @@
  * @param {number} start
  * @param {number} end
  */
-function getMinMaxInRange(array, start, end) {
+function getMinMaxInRange (array, start, end) {
   let min = 0
   let min1 = 0
   let max = 0
@@ -32,7 +32,7 @@ function getMinMaxInRange(array, start, end) {
  * @param {Float32Array} data
  * @return {Array<[number, number]>}
  */
-export default function(width, data) {
+export default function (width, data) {
   const dataLength = data.length
   const size = dataLength / width
   let current = 0

@@ -1,7 +1,7 @@
 import wav from './encode-wave'
 
 const encoder = {
-  wav
+  wav,
 }
 
 export default encoder

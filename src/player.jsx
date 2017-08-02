@@ -1,18 +1,18 @@
 import React, { PureComponent } from 'react'
+import PropTypes from 'prop-types'
 import Waver from './waver'
 import Dragger from './dragger'
 import WebAudio from './webaudio'
-import { autobind } from './utils'
 
 const containerWidth = 1000
 const containerHeight = 160
 
-function getClipRect(start, end) {
+function getClipRect (start, end) {
   return `rect(0, ${end}px, ${containerHeight}px, ${start}px)`
 }
 
 export default class Player extends PureComponent {
-  constructor(props) {
+  constructor (props) {
     super(props)
 
     this.state = {
@@ -25,27 +25,27 @@ export default class Player extends PureComponent {
     this.reinit()
   }
 
-  get widthDurationRatio() {
+  get widthDurationRatio () {
     return containerWidth / this.audio.duration
   }
 
-  get audioBuffer() {
+  get audioBuffer () {
     return this.audio.audioBuffer
   }
 
-  get startByte() {
+  get startByte () {
     return parseInt(this.audioBuffer.length * this.state.start / this.widthDurationRatio / this.duration, 10)
   }
 
-  get endByte() {
+  get endByte () {
     return parseInt(this.audioBuffer.length * this.state.end / this.widthDurationRatio / this.duration, 10)
   }
 
-  get duration() {
+  get duration () {
     return this.audio.duration
   }
 
-  clean() {
+  clean () {
     const { audio } = this
     if (!audio) {
       return
@@ -54,7 +54,7 @@ export default class Player extends PureComponent {
     audio.destroy()
   }
 
-  reinit() {
+  reinit () {
     this.clean()
 
     const audio = new WebAudio(this.props.file)
@@ -65,7 +65,7 @@ export default class Player extends PureComponent {
     this.audio = audio
   }
 
-  keepInRange(x) {
+  keepInRange (x) {
     if (x < 0) {
       return 0
     }
@@ -77,50 +77,45 @@ export default class Player extends PureComponent {
     return x
   }
 
-  @autobind
-  audioReady() {
+  audioReady = () => {
     const audio = this.audio
     this.setState({
       channelData: audio.channelData,
       start: 0,
-      end: this.widthDurationRatio * audio.duration / 2
+      end: this.widthDurationRatio * audio.duration / 2,
     }, () => {
       this.play()
     })
   }
 
-  @autobind
-  audioProcess(current) {
+  audioProcess = (current) => {
     this.setState({
-      current: this.widthDurationRatio * current
+      current: this.widthDurationRatio * current,
     })
   }
 
-  @autobind
-  dragEnd(pos) {
+  dragEnd = (pos) => {
     this.setState({
-      end: this.keepInRange(pos.x)
+      end: this.keepInRange(pos.x),
     })
   }
 
-  @autobind
-  dragCurrent(pos) {
+  dragCurrent = (pos) => {
     const fixedX = this.keepInRange(pos.x)
     this.setState({
-      current: fixedX
+      current: fixedX,
     })
 
     this.audio.position = fixedX / this.widthDurationRatio
   }
 
-  @autobind
-  dragStart(pos) {
+  dragStart = (pos) => {
     this.setState({
-      start: this.keepInRange(pos.x)
+      start: this.keepInRange(pos.x),
     })
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate (prevProps, prevState) {
     this.audio.startPosition = this.state.start / this.widthDurationRatio
     this.audio.endPosition = this.state.end / this.widthDurationRatio
 
@@ -129,24 +124,24 @@ export default class Player extends PureComponent {
     }
   }
 
-  play(...args) {
+  play (...args) {
     this.audio.play(...args)
     this.props.onPlay()
   }
 
-  pause() {
+  pause () {
     this.audio.pause()
     this.props.onPause()
   }
 
-  render() {
+  render () {
     const {
-      start, current, end, channelData
+      start, current, end, channelData,
     } = this.state
 
     if (!channelData) {
       return (
-        <div className="player player-landing">
+        <div className='player player-landing'>
           DECODING...
         </div>
       )
@@ -155,23 +150,25 @@ export default class Player extends PureComponent {
     const currentSeconds = current / this.widthDurationRatio
 
     return (
-      <div className="player">
-        <div className="clipper">
-          <Waver channelData={channelData} width={containerWidth} height={containerHeight}/>
+      <div className='player'>
+        <div className='clipper'>
+          <Waver channelData={channelData} width={containerWidth} height={containerHeight} />
         </div>
-        <div className="clipper" style={{ clip: getClipRect(start, end) }}>
-          <Waver channelData={channelData} width={containerWidth} height={containerHeight} color="#0cf"/>
+        <div className='clipper' style={{ clip: getClipRect(start, end) }}>
+          <Waver channelData={channelData} width={containerWidth} height={containerHeight} color='#0cf' />
         </div>
-        <Dragger x={start} onDrag={this.dragStart}/>
-        <Dragger className="drag-current" x={current} onDrag={this.dragCurrent}>
-          <div className="cursor-current">{currentSeconds.toFixed(2)}</div>
+        <Dragger x={start} onDrag={this.dragStart} />
+        <Dragger className='drag-current' x={current} onDrag={this.dragCurrent}>
+          <div className='cursor-current'>{currentSeconds.toFixed(2)}</div>
         </Dragger>
-        <Dragger x={end} onDrag={this.dragEnd}/>
+        <Dragger x={end} onDrag={this.dragEnd} />
       </div>
     )
   }
-}
 
-Player.defauldProps = {
-  file: null
+  static propTypes = {
+    file: PropTypes.instanceOf(Blob),
+    onPlay: PropTypes.func,
+    onPause: PropTypes.func,
+  }
 }

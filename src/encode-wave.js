@@ -9,7 +9,7 @@ import { range } from './utils'
 * @param {AudioBuffer} audioBuffer
 * @return {Promise<Blob>}
 */
-export default function encodeAudioBuffer(audioBuffer) {
+export default function encodeAudioBuffer (audioBuffer) {
   return new Promise(resolve => {
     const channelNum = audioBuffer.numberOfChannels
     const channelDatas = range(0, channelNum - 1)
@@ -28,7 +28,7 @@ export default function encodeAudioBuffer(audioBuffer) {
 * @param {Float32Array} inputL
 * @param {Float32Array} inputR
 */
-function interleave(inputs){
+function interleave (inputs) {
   if (inputs.length === 1) {
     return inputs[0]
   } else {
@@ -40,7 +40,7 @@ function interleave(inputs){
     let index = 0
     let inputIndex = 0
 
-    while (index < length){
+    while (index < length) {
       result[index++] = inputL[inputIndex]
       result[index++] = inputR[inputIndex]
       inputIndex++
@@ -54,8 +54,8 @@ function interleave(inputs){
  * @param {number} offset
  * @param {Float32Array} input
  */
-function floatTo16BitPCM(view, offset, input){
-  for (let i = 0; i < input.length; i++, offset+=2){
+function floatTo16BitPCM (view, offset, input) {
+  for (let i = 0; i < input.length; i++, offset += 2) {
     let s = Math.max(-1, Math.min(1, input[i]))
     view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true)
   }
@@ -66,8 +66,8 @@ function floatTo16BitPCM(view, offset, input){
  * @param {number} offset
  * @param {string} string
  */
-function writeString(view, offset, string){
-  for (let i = 0; i < string.length; i++){
+function writeString (view, offset, string) {
+  for (let i = 0; i < string.length; i++) {
     view.setUint8(offset + i, string.charCodeAt(i))
   }
 }
@@ -76,7 +76,7 @@ function writeString(view, offset, string){
  * @param {Float32Array} samples
  * @param {number} numChannels
  */
-function encodeWAV(samples, numChannels, sampleRate){
+function encodeWAV (samples, numChannels, sampleRate) {
   const buffer = new ArrayBuffer(44 + samples.length * 2)
   const view = new DataView(buffer)
 
@@ -111,4 +111,3 @@ function encodeWAV(samples, numChannels, sampleRate){
 
   return view
 }
-

@@ -1,30 +1,39 @@
 const path = require('path')
 
 module.exports = {
-  entry: './src/index',
+  entry: {
+    index: './src/index',
+  },
   output: {
     path: path.resolve(__dirname, 'dist'),
     publicPath: 'dist',
     filename: '[name].js'
   },
   resolve: {
-    extensions: ['', '.jsx', '.js']
+    extensions: ['.jsx', '.js']
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.less$/,
-        loader: 'style!css!less'
+        use: [
+          'style-loader',
+          'css-loader',
+          'less-loader',
+        ]
       },
       {
         test: /\.jsx?$/,
-        loader: 'babel',
+        loader: 'babel-loader',
         exclude: /node_modules/
       },
       {
         test: /\.svg$/,
-        loader: path.resolve(__dirname, 'build/svg-spirit-loader')
-      }
+        loader: 'svg-sprite-loader',
+        options: {
+          symbolId: 'icon-[name]',
+        },
+      },
     ]
   },
   devServer: {
