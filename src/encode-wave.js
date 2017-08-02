@@ -15,7 +15,6 @@ export default function encodeAudioBuffer (audioBuffer) {
     const channelDatas = range(0, channelNum - 1)
       .map(i => audioBuffer.getChannelData(i))
 
-    // const interleaved = channelNum > 1 ? interleave(channelDatas[0], channelDatas[1]) : channelDatas[0]
     const interleaved = interleave(channelDatas)
     const dataview = encodeWAV(interleaved, channelNum, audioBuffer.sampleRate)
     const audioBlob = new Blob([dataview], { type: 'audio/wav' })
@@ -25,15 +24,14 @@ export default function encodeAudioBuffer (audioBuffer) {
 }
 
 /**
-* @param {Float32Array} inputL
-* @param {Float32Array} inputR
+* @param {[Float32Array, Float32Array]} inputs
 */
 function interleave (inputs) {
   if (inputs.length === 1) {
     return inputs[0]
   } else {
     const inputL = inputs[0]
-    const inputR = inputs
+    const inputR = inputs[1]
     const length = inputL.length + inputR.length
     const result = new Float32Array(length)
 
