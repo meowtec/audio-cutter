@@ -60,6 +60,8 @@ export const readArrayBuffer = file => readFile(file, 'ArrayBuffer')
  */
 export const readDataURL = file => readFile(file, 'DataURL')
 
+export const readBlobURL = file => URL.createObjectURL(file)
+
 export function download (url, name) {
   const link = document.createElement('a')
   link.href = url

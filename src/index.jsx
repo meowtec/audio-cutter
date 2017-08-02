@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import Player from './player'
 import FilePicker from './file'
 import Icon from './icon'
-import { isAudio, readDataURL, download } from './utils'
+import { isAudio, readBlobURL, download } from './utils'
 import { sliceAudioBuffer } from './audio-helper'
 import encoder from './encoder'
 import './index.less'
@@ -51,7 +51,7 @@ class Main extends Component {
     const audioSliced = sliceAudioBuffer(player.audioBuffer, player.startByte, player.endByte)
     encoder
       .wav(audioSliced)
-      .then(readDataURL)
+      .then(readBlobURL)
       .then(url => {
         download(url, 'a.wav')
       })
