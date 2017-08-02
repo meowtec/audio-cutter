@@ -102,14 +102,13 @@ body {
 .file-main {
   display: block;
   margin: 0 auto;
-  padding: 20px;
-  width: 200px;
+  padding: 40px;
   text-align: center;
   cursor: pointer;
   color: #999;
-  border: 1px dashed #ddd;
   transition: 0.3s;
   background: none;
+  box-shadow: 0 0 20px rgba(0, 0, 0, .1);
 
   .icon {
     margin: 0 5px;
@@ -153,14 +152,17 @@ body {
     position: absolute;
     width: 60px;
     top: 0;
+    left: 0;
     visibility: hidden;
     opacity: 0;
     transition-duration: .3s;
     transition-property: opacity, visibility;
     list-style: none;
+    background: #fff;
     box-shadow: 0 0 15px rgba(0,0,0,0.2);
     padding: 0;
     margin: 0;
+    z-index: 10;
 
     button {
       &:extend(.btn-reset);

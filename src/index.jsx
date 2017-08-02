@@ -80,16 +80,14 @@ class Main extends Component {
                   <Icon name={this.state.paused ? 'play' : 'pause'} />
                 </button>
                 <div className='dropdown'>
-                  <button className='ctrl-item'>
+                  <button className='ctrl-item list-wrap'>
                     <Icon name='download' />
-                  </button>
-                  <div className='list-wrap'>
                     <ul className='list'>
                       <li><button onClick={() => this.handleEncode('wav')}>Wav</button></li>
                       <li><button>MP3</button></li>
                       <li><button>M4R</button></li>
                     </ul>
-                  </div>
+                    </button>
                 </div>
               </div>
             </div>
