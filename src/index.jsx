@@ -75,18 +75,18 @@ class Main extends Component {
                     <Icon name='music' />
                   </div>
                 </FilePicker>
-                <button className='ctrl-item' onClick={this.handlePlayPauseClick}>
+                <a className='ctrl-item' onClick={this.handlePlayPauseClick}>
                   <Icon name={this.state.paused ? 'play' : 'pause'} />
-                </button>
-                <div className='dropdown'>
-                  <button className='ctrl-item list-wrap'>
+                </a>
+                <div className='dropdown list-wrap'>
+                  <a className='ctrl-item'>
                     <Icon name='download' />
-                    <ul className='list'>
-                      <li><button onClick={() => this.handleEncode('wav')}>Wav</button></li>
-                      <li><button>MP3</button></li>
-                      <li><button>M4R</button></li>
-                    </ul>
-                    </button>
+                  </a>
+                  <ul className='list'>
+                    <li><a onClick={() => this.handleEncode('wav')}>Wav</a></li>
+                    <li><a>MP3</a></li>
+                    <li><a>M4R</a></li>
+                  </ul>
                 </div>
               </div>
             </div>

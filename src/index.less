@@ -16,9 +16,11 @@ body {
 }
 
 .container {
+  box-sizing: border-box;
   position: relative;
-  width: 1000px;
+  width: 1080px;
   margin: 0 auto;
+  padding: 40px;
 }
 
 .app-title {
@@ -92,6 +94,10 @@ body {
   }
 }
 
+.controllers {
+  margin-top: 10px;
+}
+
 .file {
   input {
     visibility: hidden;
@@ -134,7 +140,14 @@ body {
   font-size: 14px;
   text-align: center;
   color: #999;
-  padding: 5px;
+  cursor: pointer;
+  padding: 8px 12px;
+  margin-right: 10px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+
+  &:hover {
+    box-shadow: 0 0 20px rgba(0,0,0,0.16);
+  }
 
   + .ctrl-item {
     margin-left: 10px;
@@ -143,6 +156,7 @@ body {
 
 .dropdown {
   display: inline-block;
+  position: relative;
 
   .list-wrap {
     position: relative;
@@ -164,7 +178,7 @@ body {
     margin: 0;
     z-index: 10;
 
-    button {
+    a {
       &:extend(.btn-reset);
 
       display: block;
@@ -172,9 +186,12 @@ body {
       text-align: center;
       padding: 5px 0;
       color: inherit;
+      font-size: 12px;
+      cursor: pointer;
 
       &:hover {
-        background: #eee;
+        background: #333;
+        color: #fff;
       }
     }
   }
