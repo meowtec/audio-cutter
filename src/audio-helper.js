@@ -1,4 +1,4 @@
-export const audioContext = new AudioContext()
+import { range } from './utils'
 
 /**
  * decode arrayBuffer of audio file to AudioBuffer
@@ -6,7 +6,7 @@ export const audioContext = new AudioContext()
  * @return {Promise<AudioBuffer>}
  */
 export function decodeAudioArrayBuffer (arrayBuffer) {
-  return audioContext.decodeAudioData(arrayBuffer)
+  return new AudioContext().decodeAudioData(arrayBuffer)
 }
 
 /**
@@ -15,7 +15,7 @@ export function decodeAudioArrayBuffer (arrayBuffer) {
  * @return {AudioBuffer}
  */
 export function sliceAudioBuffer (audioBuffer, start = 0, end = audioBuffer.length) {
-  const newBuffer = audioContext.createBuffer(
+  const newBuffer = new AudioContext().createBuffer(
     audioBuffer.numberOfChannels,
     end - start,
     audioBuffer.sampleRate
@@ -26,4 +26,17 @@ export function sliceAudioBuffer (audioBuffer, start = 0, end = audioBuffer.leng
   }
 
   return newBuffer
+}
+
+/**
+ * serialize AudioBuffer for message send
+ * @param {AudioBuffer} audioBuffer
+ */
+export function serializeAudioBuffer (audioBuffer) {
+  return {
+    channels: range(0, audioBuffer.numberOfChannels - 1)
+      .map(i => audioBuffer.getChannelData(i)),
+    sampleRate: audioBuffer.sampleRate,
+    length: audioBuffer.length,
+  }
 }

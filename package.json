@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack -p",
-    "start": "webpack-dev-server --inline",
+    "start": "webpack-dev-server --hot",
     "lint": "eslint ./src/ --ext .jsx,.js --fix",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

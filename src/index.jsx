@@ -5,7 +5,7 @@ import FilePicker from './file'
 import Icon from './icon'
 import { isAudio, readBlobURL, download } from './utils'
 import { sliceAudioBuffer } from './audio-helper'
-import encoder from './encoder'
+import { encode } from './worker-client'
 import './index.less'
 
 class Main extends Component {
@@ -49,8 +49,7 @@ class Main extends Component {
   handleEncode (type) {
     const player = this.refs.player
     const audioSliced = sliceAudioBuffer(player.audioBuffer, player.startByte, player.endByte)
-    encoder
-      .wav(audioSliced)
+    encode(audioSliced, type)
       .then(readBlobURL)
       .then(url => {
         download(url, 'a.wav')

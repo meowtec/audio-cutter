@@ -3,24 +3,17 @@
  * https://github.com/nusofthq/Recordmp3js/blob/master/js/recorderWorker.js
  */
 
-import { range } from './utils'
-
 /**
 * @param {AudioBuffer} audioBuffer
-* @return {Promise<Blob>}
 */
-export default function encodeAudioBuffer (audioBuffer) {
-  return new Promise(resolve => {
-    const channelNum = audioBuffer.numberOfChannels
-    const channelDatas = range(0, channelNum - 1)
-      .map(i => audioBuffer.getChannelData(i))
+export default function encodeAudioBuffer ({
+  channels,
+  sampleRate,
+}) {
+  const interleaved = interleave(channels)
+  const dataview = encodeWAV(interleaved, channels.length, sampleRate)
 
-    const interleaved = interleave(channelDatas)
-    const dataview = encodeWAV(interleaved, channelNum, audioBuffer.sampleRate)
-    const audioBlob = new Blob([dataview], { type: 'audio/wav' })
-
-    resolve(audioBlob)
-  })
+  return new Blob([dataview], { type: 'audio/wav' })
 }
 
 /**
@@ -54,8 +47,17 @@ function interleave (inputs) {
  */
 function floatTo16BitPCM (view, offset, input) {
   for (let i = 0; i < input.length; i++, offset += 2) {
-    let s = Math.max(-1, Math.min(1, input[i]))
-    view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true)
+    let s = input[i]
+
+    if (s < 0) {
+      if (s < -1) s = -1
+      s *= 0x8000
+    } else {
+      if (s > 1) s = 1
+      s *= 0x7FFF
+    }
+
+    view.setInt16(offset, s, true)
   }
 }
 

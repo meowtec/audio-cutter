@@ -1,9 +1,6 @@
 const path = require('path')
 
-module.exports = {
-  entry: {
-    index: './src/index',
-  },
+const commonConfig = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     publicPath: 'dist',
@@ -37,7 +34,24 @@ module.exports = {
     ]
   },
   devServer: {
-    port: 9019
+    port: 9019,
+    hotOnly: true,
+    inline: true,
   },
   devtool: 'source-map'
 }
+
+module.exports = [
+  Object.assign({
+    entry: {
+      index: './src/index',
+    },
+  }, commonConfig),
+
+  Object.assign({
+    entry: {
+      worker: './src/worker',
+    },
+    target: 'webworker'
+  }, commonConfig),
+]

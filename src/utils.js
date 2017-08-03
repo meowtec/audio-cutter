@@ -6,30 +6,14 @@ export function isAudio (file) {
   return file.type.indexOf('audio') > -1
 }
 
+/**
+ * create range [min .. max]
+ */
 export function range (min, max) {
   return Array
     .apply(null, { length: max - min + 1 })
     .map((v, i) => i + min)
 }
-
-// /**
-//  * @param {string} url
-//  * @returns {Promise<Blob>}
-//  */
-// export function fetch(url) {
-//   return new Promise((resolve, reject) => {
-//     const xhr = new XMLHttpRequest()
-//     xhr.open('GET', url, true)
-//     xhr.responseType = 'blob'
-//     xhr.send()
-//     xhr.onload = () => {
-//       resolve(xhr.response)
-//     }
-//     xhr.onerror = (err) => {
-//       reject(new Error('XMLHttpRequest error.'))
-//     }
-//   })
-// }
 
 /**
  * FileReader via promise

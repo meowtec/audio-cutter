@@ -1,12 +1,14 @@
 import { EventEmitter } from 'events'
 import { readArrayBuffer } from './utils'
-import { audioContext, decodeAudioArrayBuffer } from './audio-helper'
+import { decodeAudioArrayBuffer } from './audio-helper'
 
 export default class WebAudio extends EventEmitter {
   constructor (file) {
     super()
     this.blob = file
   }
+
+  audioContext = new AudioContext()
 
   async init () {
     const arrayBuffer = await readArrayBuffer(this.blob)
@@ -23,6 +25,7 @@ export default class WebAudio extends EventEmitter {
   }
 
   _initAudioComponent () {
+    const { audioContext } = this
     const gainNode = audioContext.createGain()
     gainNode.connect(audioContext.destination)
 
@@ -44,7 +47,7 @@ export default class WebAudio extends EventEmitter {
   }
 
   get runtime () {
-    return audioContext.currentTime
+    return this.audioContext.currentTime
   }
 
   get duration () {
@@ -56,7 +59,7 @@ export default class WebAudio extends EventEmitter {
   }
 
   _beforePlay () {
-    const { audioBuffer, gainNode, scriptNode } = this
+    const { audioContext, audioBuffer, gainNode, scriptNode } = this
     if (this._playing) {
       this.pause()
     }
