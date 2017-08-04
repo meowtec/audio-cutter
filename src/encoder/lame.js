@@ -1,13 +1,13 @@
 /* global Mp3LameEncoder */
 
 self.Mp3LameEncoderConfig = {
-  memoryInitializerPrefixURL: "../vendor/",
+  memoryInitializerPrefixURL: '../vendor/',
   TOTAL_MEMORY: 1073741824,
 }
 
-importScripts('../vendor/Mp3LameEncoder.min.js')
+self.importScripts('../vendor/Mp3LameEncoder.min.js')
 
-export default function encodeAudioBufferLame({
+export default function encodeAudioBufferLame ({
   channels,
   sampleRate,
 }) {

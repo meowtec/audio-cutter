@@ -3,15 +3,19 @@ const path = require('path')
 const publicPath = 'dist'
 const outputPath = path.resolve(__dirname, 'dist')
 
+const isDevServer = process.argv[1].indexOf('webpack-dev-server') !== -1
+
 const commonConfig = {
   output: {
     path: outputPath,
     publicPath,
     filename: '[name].js'
   },
+
   resolve: {
     extensions: ['.jsx', '.js']
   },
+
   module: {
     rules: [
       {
@@ -36,12 +40,23 @@ const commonConfig = {
       },
     ]
   },
+
   devServer: {
     port: 9019,
+    host: '0.0.0.0',
     hotOnly: true,
     inline: true,
+    disableHostCheck: true,
   },
-  devtool: 'source-map'
+
+  externals: {
+    'react': 'React',
+    'react-dom': 'ReactDOM',
+  },
+}
+
+if (isDevServer) {
+  commonConfig.devtool = 'source-map'
 }
 
 module.exports = [
