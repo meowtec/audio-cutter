@@ -15,6 +15,7 @@ class Main extends Component {
     this.state = {
       file: null,
       paused: true,
+      processing: false,
     }
   }
 
@@ -51,10 +52,20 @@ class Main extends Component {
     const player = this.refs.player
     const audioSliced = sliceAudioBuffer(player.audioBuffer, player.startByte, player.endByte)
 
+    this.setState({
+      processing: true,
+    })
+
     encode(audioSliced, type)
       .then(readBlobURL)
       .then(url => {
         download(url, rename(this.state.file.name, type))
+      })
+      .catch((e) => console.error(e))
+      .then(() => {
+        this.setState({
+          processing: false,
+        })
       })
   }
 
@@ -77,17 +88,23 @@ class Main extends Component {
                     <Icon name='music' />
                   </div>
                 </FilePicker>
+
                 <a className='ctrl-item' onClick={this.handlePlayPauseClick}>
                   <Icon name={this.state.paused ? 'play' : 'pause'} />
                 </a>
+
                 <div className='dropdown list-wrap'>
                   <a className='ctrl-item'>
-                    <Icon name='download' />
+                    <Icon name={this.state.processing ? 'spin' : 'download'} />
                   </a>
-                  <ul className='list'>
-                    <li><a onClick={this.handleEncode} data-type="wav">Wav</a></li>
-                    <li><a onClick={this.handleEncode} data-type="mp3">MP3</a></li>
-                  </ul>
+                  {
+                    !this.state.processing && (
+                      <ul className='list'>
+                        <li><a onClick={this.handleEncode} data-type='wav'>Wav</a></li>
+                        <li><a onClick={this.handleEncode} data-type='mp3'>MP3</a></li>
+                      </ul>
+                    )
+                  }
                 </div>
               </div>
             </div>

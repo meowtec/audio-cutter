@@ -133,6 +133,20 @@ body {
   vertical-align: middle;
 }
 
+@keyframes spin {
+  from {
+    transform: rotate(0);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.icon-spin {
+  animation: spin infinite 1s linear;
+}
+
 .ctrl-item {
   &:extend(.btn-reset);
 
