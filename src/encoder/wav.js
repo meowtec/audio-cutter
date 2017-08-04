@@ -6,7 +6,7 @@
 /**
 * @param {AudioBuffer} audioBuffer
 */
-export default function encodeAudioBuffer ({
+export default function encodeAudioBufferWav ({
   channels,
   sampleRate,
 }) {

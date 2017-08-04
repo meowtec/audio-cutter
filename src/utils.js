@@ -52,3 +52,7 @@ export function download (url, name) {
   link.download = name
   link.click()
 }
+
+export function rename (filename, ext, stamp) {
+  return `${filename.replace(/\.\w+$/, '')}${stamp || ''}.${ext}`
+}

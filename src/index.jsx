@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import Player from './player'
 import FilePicker from './file'
 import Icon from './icon'
-import { isAudio, readBlobURL, download } from './utils'
+import { isAudio, readBlobURL, download, rename } from './utils'
 import { sliceAudioBuffer } from './audio-helper'
 import { encode } from './worker-client'
 import './index.less'
@@ -46,13 +46,15 @@ class Main extends Component {
     this.state.paused ? player.play() : player.pause()
   }
 
-  handleEncode (type) {
+  handleEncode = (e) => {
+    const type = e.currentTarget.dataset.type
     const player = this.refs.player
     const audioSliced = sliceAudioBuffer(player.audioBuffer, player.startByte, player.endByte)
+
     encode(audioSliced, type)
       .then(readBlobURL)
       .then(url => {
-        download(url, 'a.wav')
+        download(url, rename(this.state.file.name, type))
       })
   }
 
@@ -83,9 +85,8 @@ class Main extends Component {
                     <Icon name='download' />
                   </a>
                   <ul className='list'>
-                    <li><a onClick={() => this.handleEncode('wav')}>Wav</a></li>
-                    <li><a>MP3</a></li>
-                    <li><a>M4R</a></li>
+                    <li><a onClick={this.handleEncode} data-type="wav">Wav</a></li>
+                    <li><a onClick={this.handleEncode} data-type="mp3">MP3</a></li>
                   </ul>
                 </div>
               </div>

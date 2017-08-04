@@ -1,13 +1,20 @@
 import encodeWav from './encoder/wav'
+import encodeLame from './encoder/lame'
+
+const encodeMap = {
+  wav: encodeWav,
+  mp3: encodeLame,
+}
 
 self.onmessage = function (e) {
   const { type, id, audioData } = e.data
   let blob
 
   try {
-    if (type === 'wav') {
-      blob = encodeWav(audioData)
-    }
+    const encode = encodeMap[type]
+    if (!encode) throw new Error('Unkown audio encoding')
+
+    blob = encode(audioData)
   } catch (err) {
     postMessage({
       id,
