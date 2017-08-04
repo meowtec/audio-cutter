@@ -1,9 +1,12 @@
 const path = require('path')
 
+const publicPath = 'dist'
+const outputPath = path.resolve(__dirname, 'dist')
+
 const commonConfig = {
   output: {
-    path: path.resolve(__dirname, 'dist'),
-    publicPath: 'dist',
+    path: outputPath,
+    publicPath,
     filename: '[name].js'
   },
   resolve: {
