@@ -3,6 +3,8 @@ import PropTypes from 'prop-types'
 import Waver from './waver'
 import Dragger from './dragger'
 import WebAudio from './webaudio'
+import { formatSeconds, leftZero } from './utils'
+import Color from 'color'
 
 const containerWidth = 1000
 const containerHeight = 160
@@ -11,56 +13,65 @@ function getClipRect (start, end) {
   return `rect(0, ${end}px, ${containerHeight}px, ${start}px)`
 }
 
+const color1 = '#0cf'
+const color2 = Color(color1).lighten(0.1).toString()
+const gray1 = '#ddd'
+const gray2 = '#e3e3e3'
+
 export default class Player extends PureComponent {
+  /**
+   * 存储当前播放位置，
+   * DidUpdate 时和 props 传入的 currentTime 对比
+   */
+  currentTime = 0
+
+  /**
+   * @type {AudioBuffer}
+   */
+  audioBuffer = null
+
   constructor (props) {
     super(props)
 
     this.state = {
-      start: 0,
-      end: 0,
-      current: 0,
       channelData: null,
     }
 
-    this.reinit()
+    this.loadAudio(props.file)
   }
 
   get widthDurationRatio () {
-    return containerWidth / this.audio.duration
-  }
-
-  get audioBuffer () {
-    return this.audio.audioBuffer
-  }
-
-  get startByte () {
-    return parseInt(this.audioBuffer.length * this.state.start / this.widthDurationRatio / this.duration, 10)
-  }
-
-  get endByte () {
-    return parseInt(this.audioBuffer.length * this.state.end / this.widthDurationRatio / this.duration, 10)
-  }
-
-  get duration () {
-    return this.audio.duration
+    return containerWidth / this.audioBuffer.duration
   }
 
   clean () {
     const { audio } = this
-    if (!audio) {
-      return
-    }
 
-    audio.destroy()
+    audio && audio.destroy()
   }
 
-  reinit () {
+  async loadAudio (file) {
     this.clean()
 
-    const audio = new WebAudio(this.props.file)
+    const audioBuffer = await WebAudio.decode(file)
+    const audio = new WebAudio(audioBuffer)
+
+    this.audioBuffer = audioBuffer
+
     audio.repeat = true
-    audio.init().then(this.audioReady)
-    audio.on('process', this.audioProcess)
+    audio.on('process', this.onAudioProcess)
+    audio.on('end', this.onAudioProcessEnd)
+
+    this.setState({
+      channelData: audioBuffer.getChannelData(0),
+    })
+
+    this.props.onStartTimeChange(0)
+    this.props.onEndTimeChange(audioBuffer.duration / 3)
+
+    if (!this.props.paused) {
+      audio.play(this.props.currentTime)
+    }
 
     this.audio = audio
   }
@@ -77,67 +88,76 @@ export default class Player extends PureComponent {
     return x
   }
 
-  audioReady = () => {
-    const audio = this.audio
-    this.setState({
-      channelData: audio.channelData,
-      start: 0,
-      end: this.widthDurationRatio * audio.duration / 2,
-    }, () => {
-      this.play()
-    })
-  }
-
-  audioProcess = (current) => {
-    this.setState({
-      current: this.widthDurationRatio * current,
-    })
-  }
-
-  dragEnd = (pos) => {
-    this.setState({
-      end: this.keepInRange(pos.x),
-    })
-  }
-
-  dragCurrent = (pos) => {
-    const fixedX = this.keepInRange(pos.x)
-    this.setState({
-      current: fixedX,
-    })
-
-    this.audio.position = fixedX / this.widthDurationRatio
-  }
-
-  dragStart = (pos) => {
-    this.setState({
-      start: this.keepInRange(pos.x),
-    })
-  }
-
-  componentDidUpdate (prevProps, prevState) {
-    this.audio.startPosition = this.state.start / this.widthDurationRatio
-    this.audio.endPosition = this.state.end / this.widthDurationRatio
-
-    if (this.props.file !== prevProps.file) {
-      this.reinit()
+  onAudioProcess = current => {
+    if (this.props.currentTime < this.props.endTime &&
+      current >= this.props.endTime
+    ) {
+      this.props.onCurrentTimeChange(this.props.startTime || 0)
+    } else {
+      this.currentTime = current
+      this.props.onCurrentTimeChange(current)
     }
   }
 
-  play (...args) {
-    this.audio.play(...args)
-    this.props.onPlay()
+  onAudioProcessEnd = () => {
+    this.props.onCurrentTimeChange(this.props.startTime || 0)
   }
 
-  pause () {
-    this.audio.pause()
-    this.props.onPause()
+  dragEnd = pos => {
+    this.props.onEndTimeChange(this.pos2Time(this.keepInRange(pos.x)))
+  }
+
+  dragCurrent = pos => {
+    this.props.onCurrentTimeChange(this.pos2Time(this.keepInRange(pos.x)))
+  }
+
+  dragStart = pos => {
+    this.props.onStartTimeChange(this.pos2Time(this.keepInRange(pos.x)))
+  }
+
+  pos2Time (pos) {
+    return pos / this.widthDurationRatio
+  }
+
+  time2pos (time) {
+    return time * this.widthDurationRatio
+  }
+
+  componentDidUpdate (prevProps, prevState) {
+    // 如果 paused 状态改变
+    if (prevProps.paused !== this.props.paused) {
+      if (this.props.paused) {
+        this.audio.pause()
+      } else {
+        this.audio.play(this.props.currentTime)
+      }
+    }
+
+    // 如果 currentTime 改变（传入的和上次 onChange 的不同），从改变处播放
+    if (!this.props.paused &&
+      this.currentTime !== this.props.currentTime) {
+      this.audio.play(this.props.currentTime)
+    }
+
+    if (this.props.file !== prevProps.file) {
+      this.loadAudio()
+    }
+  }
+
+  renderTimestamp () {
+    const formated = formatSeconds(this.props.currentTime)
+
+    return (
+      <div className='cursor-current'>
+        <span className='num'>{formated[0]}</span>'
+        <span className='num'>{formated[1]}</span>.
+        <span className='num'>{leftZero(formated[2], 2)}</span>
+      </div>
+    )
   }
 
   render () {
-    const {
-      start, current, end, channelData,
-    } = this.state
+    const { channelData } = this.state
 
     if (!channelData) {
       return (
@@ -147,28 +167,61 @@ export default class Player extends PureComponent {
       )
     }
 
-    const currentSeconds = current / this.widthDurationRatio
+    const start = this.time2pos(this.props.startTime)
+    const end = this.time2pos(this.props.endTime)
+    const current = this.time2pos(this.props.currentTime)
 
     return (
       <div className='player'>
         <div className='clipper'>
-          <Waver channelData={channelData} width={containerWidth} height={containerHeight} />
+          <Waver
+            channelData={this.state.channelData}
+            width={containerWidth}
+            height={containerHeight}
+            color1={gray1}
+            color2={gray2}
+          />
         </div>
-        <div className='clipper' style={{ clip: getClipRect(start, end) }}>
-          <Waver channelData={channelData} width={containerWidth} height={containerHeight} color='#0cf' />
+        <div
+          className='clipper'
+          style={{ clip: getClipRect(start, end) }}
+        >
+          <Waver
+            channelData={channelData}
+            width={containerWidth}
+            height={containerHeight}
+            color1={color1}
+            color2={color2}
+          />
         </div>
-        <Dragger x={start} onDrag={this.dragStart} />
-        <Dragger className='drag-current' x={current} onDrag={this.dragCurrent}>
-          <div className='cursor-current'>{currentSeconds.toFixed(2)}</div>
+        <Dragger
+          x={start}
+          onDrag={this.dragStart}
+        />
+        <Dragger
+          className='drag-current'
+          x={current}
+          onDrag={this.dragCurrent}
+        >
+          {this.renderTimestamp()}
         </Dragger>
-        <Dragger x={end} onDrag={this.dragEnd} />
+        <Dragger
+          x={end}
+          onDrag={this.dragEnd}
+        />
       </div>
     )
   }
 
   static propTypes = {
     file: PropTypes.instanceOf(Blob),
-    onPlay: PropTypes.func,
-    onPause: PropTypes.func,
+    paused: PropTypes.bool,
+    startTime: PropTypes.number,
+    endTime: PropTypes.number,
+    currentTime: PropTypes.number,
+
+    onStartTimeChange: PropTypes.func,
+    onEndTimeChange: PropTypes.func,
+    onCurrentTimeChange: PropTypes.func,
   }
 }

@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import getPeaks from './peaks'
-import Color from 'color'
+import classnames from 'classnames'
 
 const dpr = window.devicePixelRatio || 1
 
@@ -51,8 +51,6 @@ export default class Waver extends PureComponent {
     const count = peaks.length
     const height = this.props.height
     const centerY = this.props.height / 2 * dpr
-    const color = this.props.color
-    const lightColor = Color(color).lighten(0.2).toString()
 
     ctx.lineWidth = 1
     ctx.clearRect(0, 0, this.props.width * dpr, this.props.height * dpr)
@@ -62,13 +60,13 @@ export default class Waver extends PureComponent {
       const x = i - 0.5
 
       ctx.beginPath()
-      ctx.strokeStyle = color
+      ctx.strokeStyle = this.props.color1
       ctx.moveTo(x, ((min + 1) * height) + 0.5)
       ctx.lineTo(x, centerY)
       ctx.stroke()
 
       ctx.beginPath()
-      ctx.strokeStyle = lightColor
+      ctx.strokeStyle = this.props.color2
       ctx.moveTo(x, centerY)
       ctx.lineTo(x, ((max + 1) * height) + 0.5)
       ctx.stroke()
@@ -79,7 +77,7 @@ export default class Waver extends PureComponent {
     return (
       <canvas
         ref='canvas'
-        className='wave-canvas'
+        className={classnames('wave-canvas', this.props.className)}
         style={{
           width: this.props.width + 'px',
           height: this.props.height + 'px',
@@ -91,13 +89,16 @@ export default class Waver extends PureComponent {
   }
 
   static defaultProps = {
-    color: '#aaa',
+    color1: '#ccc',
+    color2: '#ddd',
   }
 
   static propTypes = {
+    className: PropTypes.string,
     channelData: PropTypes.instanceOf(Float32Array),
     width: PropTypes.number.isRequired,
     height: PropTypes.number.isRequired,
-    color: PropTypes.string,
+    color1: PropTypes.string,
+    color2: PropTypes.string,
   }
 }

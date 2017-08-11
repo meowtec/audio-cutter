@@ -15,11 +15,14 @@ class Main extends Component {
     this.state = {
       file: null,
       paused: true,
+      startTime: 0,
+      endTime: Infinity,
+      currentTime: 0,
       processing: false,
     }
   }
 
-  handleFileChange = (file) => {
+  handleFileChange = file => {
     if (!isAudio(file)) {
       return alert('请选择合法的音频文件')
     }
@@ -30,27 +33,55 @@ class Main extends Component {
     })
   }
 
-  handlePlayerPause = () => {
+  handleStartTimeChange = time => {
     this.setState({
-      paused: true,
+      startTime: time,
     })
   }
 
-  handlePlayerPlay = () => {
+  handleEndTimeChange = time => {
     this.setState({
-      paused: false,
+      endTime: time,
     })
   }
 
-  handlePlayPauseClick = (file) => {
-    const player = this.refs.player
-    this.state.paused ? player.play() : player.pause()
+  handleCurrentTimeChange = time => {
+    this.setState({
+      currentTime: time,
+    })
+  }
+
+  handlePlayPauseClick = () => {
+    this.setState({
+      paused: !this.state.paused,
+    })
+  }
+
+  handleReplayClick = () => {
+    this.setState({
+      currentTime: this.state.startTime,
+    })
+  }
+
+  get startByte () {
+    return parseInt(this.audioBuffer.length * this.state.start / this.widthDurationRatio / this.duration, 10)
+  }
+
+  get endByte () {
+    return parseInt(this.audioBuffer.length * this.state.end / this.widthDurationRatio / this.duration, 10)
   }
 
   handleEncode = (e) => {
     const type = e.currentTarget.dataset.type
-    const player = this.refs.player
-    const audioSliced = sliceAudioBuffer(player.audioBuffer, player.startByte, player.endByte)
+    const { audioBuffer } = this.refs.player
+    const { startTime, endTime } = this.state
+    const { length, duration } = audioBuffer
+
+    const audioSliced = sliceAudioBuffer(
+      audioBuffer,
+      ~~(length * startTime / duration),
+      ~~(length * endTime / duration),
+    )
 
     this.setState({
       processing: true,
@@ -77,10 +108,15 @@ class Main extends Component {
             <div>
               <h2 className='app-title'>Audio Cutter</h2>
               <Player
-                onPause={this.handlePlayerPause}
-                onPlay={this.handlePlayerPlay}
-                ref='player'
+                paused={this.state.paused}
+                startTime={this.state.startTime}
+                endTime={this.state.endTime}
+                currentTime={this.state.currentTime}
+                onStartTimeChange={this.handleStartTimeChange}
+                onEndTimeChange={this.handleEndTimeChange}
+                onCurrentTimeChange={this.handleCurrentTimeChange}
                 file={this.state.file}
+                ref='player'
               />
               <div className='controllers'>
                 <FilePicker onChange={this.handleFileChange}>
@@ -91,6 +127,10 @@ class Main extends Component {
 
                 <a className='ctrl-item' onClick={this.handlePlayPauseClick}>
                   <Icon name={this.state.paused ? 'play' : 'pause'} />
+                </a>
+
+                <a className='ctrl-item' onClick={this.handleReplayClick}>
+                  <Icon name='replay' />
                 </a>
 
                 <div className='dropdown list-wrap'>
@@ -106,6 +146,13 @@ class Main extends Component {
                     )
                   }
                 </div>
+
+                {
+                  isFinite(this.state.endTime) &&
+                  <span className='total-seconds'>{
+                    (this.state.endTime - this.state.startTime).toFixed(2)
+                  } s</span>
+                }
               </div>
             </div>
           ) : (

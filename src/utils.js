@@ -2,18 +2,16 @@
  * detect if a file is an audio.
  * @param {File} file
  */
-export function isAudio (file) {
-  return file.type.indexOf('audio') > -1
-}
+export const isAudio = file =>
+  file.type.indexOf('audio') > -1
 
 /**
  * create range [min .. max]
  */
-export function range (min, max) {
-  return Array
+export const range = (min, max) =>
+  Array
     .apply(null, { length: max - min + 1 })
     .map((v, i) => i + min)
-}
 
 /**
  * FileReader via promise
@@ -21,14 +19,13 @@ export function range (min, max) {
  * @param {string} dataType
  * @return {Promise<ArrayBuffer | string>}
  */
-export function readFile (file, dataType) {
-  return new Promise((resolve, reject) => {
+export const readFile = (file, dataType) =>
+  new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader['readAs' + dataType](file)
     reader.onload = () => resolve(reader.result)
     reader.onerror = err => reject(err)
   })
-}
 
 /**
  * Read File/Blob to ArrayBuffer
@@ -46,13 +43,27 @@ export const readDataURL = file => readFile(file, 'DataURL')
 
 export const readBlobURL = file => URL.createObjectURL(file)
 
-export function download (url, name) {
+export const download = (url, name) => {
   const link = document.createElement('a')
   link.href = url
   link.download = name
   link.click()
 }
 
-export function rename (filename, ext, stamp) {
-  return `${filename.replace(/\.\w+$/, '')}${stamp || ''}.${ext}`
+export const rename = (filename, ext, stamp) =>
+  `${filename.replace(/\.\w+$/, '')}${stamp || ''}.${ext}`
+
+/**
+ * format seconds to [minutes, integer, decimal(2)]
+ * @param {number} seconds
+ */
+export const formatSeconds = seconds =>
+  [
+    Math.floor(seconds / 60),
+    Math.floor(seconds % 60),
+    Math.round(seconds % 1 * 100),
+  ]
+
+export const leftZero = (num, count) => {
+  return ('000000' + num).slice(-count)
 }

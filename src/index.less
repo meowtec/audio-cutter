@@ -96,6 +96,15 @@ body {
 
 .controllers {
   margin-top: 10px;
+
+  .total-seconds {
+    font-size: 12px;
+    line-height: 36px;
+    margin-left: 10px;
+    display: inline-block;
+    overflow: hidden;
+    color: #aaa;
+  }
 }
 
 .file {
@@ -117,7 +126,8 @@ body {
   box-shadow: 0 0 20px rgba(0, 0, 0, .1);
 
   .icon {
-    margin: 0 5px;
+    margin: -1px 5px 0;
+    font-size: 24px;
   }
 
   &:hover {
@@ -151,20 +161,20 @@ body {
   &:extend(.btn-reset);
 
   display: inline-block;
-  font-size: 14px;
+  font-size: 16px;
   text-align: center;
   color: #999;
-  cursor: pointer;
-  padding: 8px 12px;
+  padding: 10px;
   margin-right: 10px;
   box-shadow: 0 0 15px rgba(0,0,0,0.1);
+  cursor: pointer;
 
   &:hover {
     box-shadow: 0 0 20px rgba(0,0,0,0.16);
   }
 
-  + .ctrl-item {
-    margin-left: 10px;
+  .icon {
+    display: block;
   }
 }
 
@@ -229,11 +239,14 @@ body {
   font-size: 12px;
   top: -22px;
   padding: 1px 3px;
-  font-family: monospace;
   text-align: center;
   color: #fff;
   transform: translate(-50%) scale(0.8);
   background: @cursorColor;
+
+  .num {
+    font-family: monospace;
+  }
 
   &::after {
     content: '';

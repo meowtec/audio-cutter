@@ -1,57 +1,46 @@
 import { EventEmitter } from 'events'
 import { readArrayBuffer } from './utils'
-import { decodeAudioArrayBuffer } from './audio-helper'
 
 export default class WebAudio extends EventEmitter {
-  constructor (file) {
-    super()
-    this.blob = file
-  }
-
   audioContext = new AudioContext()
 
-  async init () {
-    const arrayBuffer = await readArrayBuffer(this.blob)
-    const audioBuffer = await decodeAudioArrayBuffer(arrayBuffer)
-    const channelData = await this._getDefaultChannelData(audioBuffer)
+  /**
+   * @type {number}
+   */
+  startRunetime = null
 
-    this.arrayBuffer = arrayBuffer
+  /**
+   * @type {number}
+   */
+  startTime = null
+
+  _playing = false
+
+  /**
+   * @param {AudioBuffer} audioBuffer
+   */
+  constructor (audioBuffer) {
+    super()
+
     this.audioBuffer = audioBuffer
-    this.channelData = channelData
-
     this._initAudioComponent()
-    this.prepared = true
-    return this
   }
 
   _initAudioComponent () {
     const { audioContext } = this
+
     const gainNode = audioContext.createGain()
     gainNode.connect(audioContext.destination)
 
     const scriptNode = audioContext.createScriptProcessor(4096)
-    scriptNode.onaudioprocess = this._onprocess
+    scriptNode.onaudioprocess = this.onprocess
 
     this.gainNode = gainNode
     this.scriptNode = scriptNode
   }
 
   get currentPosition () {
-    if (this._startTime == null) {
-      return this.startPosition || 0
-    }
-    if (!this._playing) {
-      return this._pausedPosition
-    }
-    return this.runtime - this._startTime + this._startPosition
-  }
-
-  get runtime () {
-    return this.audioContext.currentTime
-  }
-
-  get duration () {
-    return this.audioBuffer.duration
+    return this.audioContext.currentTime - this.startRunetime + this.startTime
   }
 
   get paused () {
@@ -60,7 +49,7 @@ export default class WebAudio extends EventEmitter {
 
   _beforePlay () {
     const { audioContext, audioBuffer, gainNode, scriptNode } = this
-    if (this._playing) {
+    if (!this.paused) {
       this.pause()
     }
 
@@ -69,86 +58,61 @@ export default class WebAudio extends EventEmitter {
     const source = audioContext.createBufferSource()
     source.buffer = audioBuffer
     source.connect(gainNode)
-    source.onended = this._onended
+    source.onended = this.onended
 
     this.source = source
     this._playing = true
   }
 
-  _afterPlay () {
+  _afterStop () {
     this.source.disconnect()
     this.scriptNode.disconnect()
     this._playing = false
   }
 
-  _onended = () => {
-    this._end(true)
-  }
-
-  _onprocess = () => {
-    const currentPosition = this.currentPosition
-    this.emit('process', currentPosition)
-
-    if (currentPosition > this.endPosition) {
-      this._end(false)
-    }
-  }
-
-  _end (EOF) {
+  onended = () => {
     this.pause()
-    this.emit('end', EOF)
-
-    if (this.repeat) {
-      this._replay()
-    }
+    this.pause()
+    this.pause()
+    this.emit('end')
   }
 
-  _replay () {
-    this.play(this.startPosition || 0)
+  onprocess = () => {
+    this.emit('process', this.currentPosition)
   }
 
   play (start = this.currentPosition) {
-    if (!this.prepared) return
-
     this._beforePlay()
 
     const source = this.source
-    this._startTime = this.runtime
-    this._startPosition = start
+    this.startRunetime = this.audioContext.currentTime
+    this.startTime = start
 
-    source.start(0, start, this.duration)
+    source.start(0, start)
   }
 
   pause () {
-    if (!this.prepared) return
-
     this.source.stop()
-    this._pausedPosition = this.currentPosition
 
-    this._afterPlay()
-  }
-
-  set position (pos) {
-    if (this.paused) {
-      this._pausedPosition = pos
-    } else {
-      this.play(pos)
-    }
-  }
-
-  /**
-  * @param {AudioBuffer} audioBuffer
-  * @return {Float32Array}
-  * @private
-  */
-  _getDefaultChannelData (audioBuffer) {
-    this.audioBuffer = audioBuffer
-    return audioBuffer.getChannelData(0)
+    this._afterStop()
   }
 
   destroy () {
-    this._afterPlay()
+    this._afterStop()
+
     this.gainNode.disconnect()
     this.removeAllListeners()
+  }
+
+  /**
+   * decode blob to audio data
+   * @param {Blob} blob
+   * @return {Promise<AudioBuffer>}
+   */
+  static async decode (blob) {
+    const arrayBuffer = await readArrayBuffer(blob)
+    const audioBuffer = await new AudioContext().decodeAudioData(arrayBuffer)
+
+    return audioBuffer
   }
 }

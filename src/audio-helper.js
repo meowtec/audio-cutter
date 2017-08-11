@@ -4,6 +4,7 @@ import { range } from './utils'
  * decode arrayBuffer of audio file to AudioBuffer
  * @param {ArrayBuffer} arrayBuffer
  * @return {Promise<AudioBuffer>}
+ * @deprecated use AudioContext.decodeAudioData directly
  */
 export function decodeAudioArrayBuffer (arrayBuffer) {
   return new AudioContext().decodeAudioData(arrayBuffer)
