@@ -6,6 +6,7 @@ import Icon from './icon'
 import { isAudio, readBlobURL, download, rename } from './utils'
 import { sliceAudioBuffer } from './audio-helper'
 import { encode } from './worker-client'
+import WebAudio from './webaudio'
 import './index.less'
 
 class Main extends Component {
@@ -14,6 +15,8 @@ class Main extends Component {
 
     this.state = {
       file: null,
+      decoding: false,
+      audioBuffer: null,
       paused: true,
       startTime: 0,
       endTime: Infinity,
@@ -22,14 +25,29 @@ class Main extends Component {
     }
   }
 
-  handleFileChange = file => {
+  handleFileChange = async file => {
     if (!isAudio(file)) {
       return alert('请选择合法的音频文件')
     }
 
     this.setState({
       file,
+      paused: true,
+      decoding: true,
+      audioBuffer: null,
+    })
+
+    const audioBuffer = await WebAudio.decode(file)
+
+    window.audioBuffer = audioBuffer
+
+    this.setState({
       paused: false,
+      decoding: false,
+      audioBuffer,
+      startTime: 0,
+      currentTime: 0,
+      endTime: audioBuffer.duration / 2,
     })
   }
 
@@ -73,8 +91,7 @@ class Main extends Component {
 
   handleEncode = (e) => {
     const type = e.currentTarget.dataset.type
-    const { audioBuffer } = this.refs.player
-    const { startTime, endTime } = this.state
+    const { startTime, endTime, audioBuffer } = this.state
     const { length, duration } = audioBuffer
 
     const audioSliced = sliceAudioBuffer(
@@ -104,32 +121,42 @@ class Main extends Component {
     return (
       <div className='container'>
         {
-          this.state.file ? (
+          this.state.audioBuffer || this.state.decoding ? (
             <div>
               <h2 className='app-title'>Audio Cutter</h2>
-              <Player
-                paused={this.state.paused}
-                startTime={this.state.startTime}
-                endTime={this.state.endTime}
-                currentTime={this.state.currentTime}
-                onStartTimeChange={this.handleStartTimeChange}
-                onEndTimeChange={this.handleEndTimeChange}
-                onCurrentTimeChange={this.handleCurrentTimeChange}
-                file={this.state.file}
-                ref='player'
-              />
+
+              {
+                this.state.decoding ? (
+                  <div className='player player-landing'>
+                    DECODING...
+                  </div>
+                ) : (
+                  <Player
+                    audioBuffer={this.state.audioBuffer}
+                    paused={this.state.paused}
+                    startTime={this.state.startTime}
+                    endTime={this.state.endTime}
+                    currentTime={this.state.currentTime}
+                    onStartTimeChange={this.handleStartTimeChange}
+                    onEndTimeChange={this.handleEndTimeChange}
+                    onCurrentTimeChange={this.handleCurrentTimeChange}
+                    ref='player'
+                  />
+                )
+              }
+
               <div className='controllers'>
                 <FilePicker onChange={this.handleFileChange}>
-                  <div className='ctrl-item'>
+                  <div className='ctrl-item' title="重新选择">
                     <Icon name='music' />
                   </div>
                 </FilePicker>
 
-                <a className='ctrl-item' onClick={this.handlePlayPauseClick}>
+                <a className='ctrl-item' title="播放/暂停" onClick={this.handlePlayPauseClick}>
                   <Icon name={this.state.paused ? 'play' : 'pause'} />
                 </a>
 
-                <a className='ctrl-item' onClick={this.handleReplayClick}>
+                <a className='ctrl-item' title="回放" onClick={this.handleReplayClick}>
                   <Icon name='replay' />
                 </a>
 

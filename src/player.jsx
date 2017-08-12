@@ -30,18 +30,8 @@ export default class Player extends PureComponent {
    */
   audioBuffer = null
 
-  constructor (props) {
-    super(props)
-
-    this.state = {
-      channelData: null,
-    }
-
-    this.loadAudio(props.file)
-  }
-
   get widthDurationRatio () {
-    return containerWidth / this.audioBuffer.duration
+    return containerWidth / this.props.audioBuffer.duration
   }
 
   clean () {
@@ -50,24 +40,15 @@ export default class Player extends PureComponent {
     audio && audio.destroy()
   }
 
-  async loadAudio (file) {
+  initWebAudio () {
     this.clean()
 
-    const audioBuffer = await WebAudio.decode(file)
+    const { audioBuffer } = this.props
+
     const audio = new WebAudio(audioBuffer)
 
-    this.audioBuffer = audioBuffer
-
-    audio.repeat = true
     audio.on('process', this.onAudioProcess)
     audio.on('end', this.onAudioProcessEnd)
-
-    this.setState({
-      channelData: audioBuffer.getChannelData(0),
-    })
-
-    this.props.onStartTimeChange(0)
-    this.props.onEndTimeChange(audioBuffer.duration / 3)
 
     if (!this.props.paused) {
       audio.play(this.props.currentTime)
@@ -139,9 +120,13 @@ export default class Player extends PureComponent {
       this.audio.play(this.props.currentTime)
     }
 
-    if (this.props.file !== prevProps.file) {
-      this.loadAudio()
+    if (this.props.audioBuffer !== prevProps.audioBuffer) {
+      this.initWebAudio()
     }
+  }
+
+  componentDidMount () {
+    this.initWebAudio()
   }
 
   renderTimestamp () {
@@ -157,15 +142,7 @@ export default class Player extends PureComponent {
   }
 
   render () {
-    const { channelData } = this.state
-
-    if (!channelData) {
-      return (
-        <div className='player player-landing'>
-          DECODING...
-        </div>
-      )
-    }
+    const channelData = this.props.audioBuffer.getChannelData(0)
 
     const start = this.time2pos(this.props.startTime)
     const end = this.time2pos(this.props.endTime)
@@ -175,7 +152,7 @@ export default class Player extends PureComponent {
       <div className='player'>
         <div className='clipper'>
           <Waver
-            channelData={this.state.channelData}
+            channelData={channelData}
             width={containerWidth}
             height={containerHeight}
             color1={gray1}
@@ -214,7 +191,8 @@ export default class Player extends PureComponent {
   }
 
   static propTypes = {
-    file: PropTypes.instanceOf(Blob),
+    encoding: PropTypes.bool,
+    audioBuffer: PropTypes.instanceOf(AudioBuffer),
     paused: PropTypes.bool,
     startTime: PropTypes.number,
     endTime: PropTypes.number,
