@@ -1,9 +1,13 @@
 # audio-cutter
 ✄Cut audio using HTML + JavaScript.
 
-![screenshot](https://cloud.githubusercontent.com/assets/4006436/18225512/0b8d2ad0-7226-11e6-9279-a3999f630106.png)
+![screenshot](https://user-images.githubusercontent.com/4006436/29242230-cc55a19a-7fbb-11e7-8cda-b92499a79b45.png)
 
 online https://meowtec.github.io/audio-cutter/
+
+### Platforms
+
+ - latest Chrome
 
 ### Exports
 
