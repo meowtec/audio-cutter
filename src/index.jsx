@@ -117,7 +117,13 @@ class Main extends Component {
       })
   }
 
+  displaySeconds (seconds) {
+    return seconds.toFixed(2) + 's'
+  }
+
   render () {
+    const { state } = this
+
     return (
       <div className='container'>
         {
@@ -176,11 +182,17 @@ class Main extends Component {
 
                 {
                   isFinite(this.state.endTime) &&
-                  <span className='total-seconds'>{
-                    (this.state.endTime - this.state.startTime).toFixed(2)
-                  }s / {
-                    this.state.audioBuffer.duration.toFixed(2)
-                  }s</span>
+                  <span className='seconds'>
+                    Select <span class="seconds-range">{
+                      this.displaySeconds(state.endTime - state.startTime)
+                    }</span> of <span class="seconds-total">{
+                      this.displaySeconds(state.audioBuffer.duration)
+                    }</span> (from <span class="seconds-start">{
+                      this.displaySeconds(state.startTime)
+                    }</span> to <span class="seconds-end">{
+                      this.displaySeconds(state.endTime)
+                    }</span>)
+                  </span>
                 }
               </div>
             </div>
