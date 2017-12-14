@@ -183,13 +183,13 @@ class Main extends Component {
                 {
                   isFinite(this.state.endTime) &&
                   <span className='seconds'>
-                    Select <span class="seconds-range">{
+                    Select <span className='seconds-range'>{
                       this.displaySeconds(state.endTime - state.startTime)
-                    }</span> of <span class="seconds-total">{
+                    }</span> of <span className='seconds-total'>{
                       this.displaySeconds(state.audioBuffer.duration)
-                    }</span> (from <span class="seconds-start">{
+                    }</span> (from <span className='seconds-start'>{
                       this.displaySeconds(state.startTime)
-                    }</span> to <span class="seconds-end">{
+                    }</span> to <span className='seconds-end'>{
                       this.displaySeconds(state.endTime)
                     }</span>)
                   </span>
