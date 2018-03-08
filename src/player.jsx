@@ -142,8 +142,6 @@ export default class Player extends PureComponent {
   }
 
   render () {
-    const channelData = this.props.audioBuffer.getChannelData(0)
-
     const start = this.time2pos(this.props.startTime)
     const end = this.time2pos(this.props.endTime)
     const current = this.time2pos(this.props.currentTime)
@@ -152,7 +150,7 @@ export default class Player extends PureComponent {
       <div className='player'>
         <div className='clipper'>
           <Waver
-            channelData={channelData}
+            audioBuffer={this.props.audioBuffer}
             width={containerWidth}
             height={containerHeight}
             color1={gray1}
@@ -164,7 +162,7 @@ export default class Player extends PureComponent {
           style={{ clip: getClipRect(start, end) }}
         >
           <Waver
-            channelData={channelData}
+            audioBuffer={this.props.audioBuffer}
             width={containerWidth}
             height={containerHeight}
             color1={color1}

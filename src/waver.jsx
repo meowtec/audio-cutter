@@ -6,6 +6,9 @@ import classnames from 'classnames'
 const dpr = window.devicePixelRatio || 1
 
 export default class Waver extends PureComponent {
+  /** @type {CanvasRenderingContext2D} */
+  ctx = null
+
   constructor (props) {
     super(props)
 
@@ -15,7 +18,7 @@ export default class Waver extends PureComponent {
   }
 
   componentWillMount () {
-    this.setPeaks(this.props.channelData)
+    this.setPeaks(this.props.audioBuffer.getChannelData(0))
   }
 
   componentDidMount () {
@@ -26,8 +29,8 @@ export default class Waver extends PureComponent {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (this.props.channelData !== nextProps.channelData) {
-      this.setPeaks(nextProps.channelData)
+    if (this.props.audioBuffer !== nextProps.audioBuffer) {
+      this.setPeaks(nextProps.audioBuffer)
     }
   }
 
@@ -95,7 +98,7 @@ export default class Waver extends PureComponent {
 
   static propTypes = {
     className: PropTypes.string,
-    channelData: PropTypes.instanceOf(Float32Array),
+    autioBuffer: PropTypes.instanceOf(AudioBuffer),
     width: PropTypes.number.isRequired,
     height: PropTypes.number.isRequired,
     color1: PropTypes.string,

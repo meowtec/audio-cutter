@@ -39,6 +39,7 @@
     "style-loader": "^0.18.2",
     "svg-sprite-loader": "^3.0.10",
     "webpack": "^3.4.1",
-    "webpack-dev-server": "^2.6.1"
+    "webpack-dev-server": "^2.6.1",
+    "@mohayonao/web-audio-api-shim": "^0.3.0"
   }
 }

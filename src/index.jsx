@@ -1,3 +1,4 @@
+import '@mohayonao/web-audio-api-shim'
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 import Player from './player'
