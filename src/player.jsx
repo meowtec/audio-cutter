@@ -81,7 +81,27 @@ export default class Player extends PureComponent {
   }
 
   onAudioProcessEnd = () => {
-    this.props.onCurrentTimeChange(this.props.startTime || 0)
+
+    const { startTime, currentTime, paused } = this.props;
+
+    if (paused)
+    {
+      let newCurrentTime = 0;
+
+      if(startTime > 0 && currentTime < startTime){
+        newCurrentTime = startTime;
+      }
+      else {
+        newCurrentTime = currentTime;
+      }
+
+      this.props.onCurrentTimeChange(newCurrentTime)
+    }
+    else{
+      this.props.onSetPaused();
+      this.props.onCurrentTimeChange(startTime || 0)
+    }
+
   }
 
   dragEnd = pos => {
@@ -105,7 +125,7 @@ export default class Player extends PureComponent {
   }
 
   componentDidUpdate (prevProps, prevState) {
-    // 如果 paused 状态改变
+      // If the paused state changes
     if (prevProps.paused !== this.props.paused) {
       if (this.props.paused) {
         this.audio.pause()
@@ -114,8 +134,8 @@ export default class Player extends PureComponent {
       }
     }
 
-    // 如果 currentTime 改变（传入的和上次 onChange 的不同），从改变处播放
-    if (!this.props.paused &&
+    // If currentTime changes (the one passed in is different from the last onChange), play from the point of change
+    else if (!this.props.paused &&
       this.currentTime !== this.props.currentTime) {
       this.audio.play(this.props.currentTime)
     }

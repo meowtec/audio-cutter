@@ -147,6 +147,7 @@ class Main extends Component {
                     onStartTimeChange={this.handleStartTimeChange}
                     onEndTimeChange={this.handleEndTimeChange}
                     onCurrentTimeChange={this.handleCurrentTimeChange}
+                    onSetPaused={this.handlePlayPauseClick}
                     ref='player'
                   />
                 )
@@ -154,16 +155,16 @@ class Main extends Component {
 
               <div className='controllers'>
                 <FilePicker onChange={this.handleFileChange}>
-                  <div className='ctrl-item' title='重新选择'>
+                  <div className='ctrl-item' title='Reselect File'>
                     <Icon name='music' />
                   </div>
                 </FilePicker>
 
-                <a className='ctrl-item' title='播放/暂停' onClick={this.handlePlayPauseClick}>
+                <a className='ctrl-item' title='Play/Pause' onClick={this.handlePlayPauseClick}>
                   <Icon name={this.state.paused ? 'play' : 'pause'} />
                 </a>
 
-                <a className='ctrl-item' title='回放' onClick={this.handleReplayClick}>
+                <a className='ctrl-item' title='Replay' onClick={this.handleReplayClick}>
                   <Icon name='replay' />
                 </a>
 
@@ -203,7 +204,7 @@ class Main extends Component {
               <FilePicker onChange={this.handleFileChange}>
                 <div className='file-main'>
                   <Icon name='music' />
-                  选择音乐文件
+                  Select music file
                 </div>
               </FilePicker>
             </div>
