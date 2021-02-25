@@ -1,75 +1,93 @@
-const path = require('path')
+/* eslint-disable quote-props */
+// @ts-check
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
-const publicPath = 'dist'
-const outputPath = path.resolve(__dirname, 'dist')
+const isDevelopment = process.env.NODE_ENV !== 'production';
 
-const isDevServer = process.argv[1].indexOf('webpack-dev-server') !== -1
+/**
+ * create a webpack config
+ * @param {string} entry
+ * @param {boolean} isWorker
+ */
+function createConfig(
+  entry,
+  isWorker,
+) {
+  /** @type {import('webpack').Configuration} */
+  const config = {
+    entry: {
+      [entry]: `./src/${entry}`,
+    },
 
-const commonConfig = {
-  output: {
-    path: outputPath,
-    publicPath,
-    filename: '[name].js'
-  },
+    output: {
+      path: path.resolve(__dirname, 'dist'),
+    },
 
-  resolve: {
-    extensions: ['.jsx', '.js']
-  },
+    target: isWorker ? 'webworker' : 'web',
 
-  module: {
-    rules: [
-      {
-        test: /\.less$/,
-        use: [
-          'style-loader',
-          'css-loader',
-          'less-loader',
-        ]
-      },
-      {
-        test: /\.jsx?$/,
-        loader: 'babel-loader',
-        exclude: /node_modules/
-      },
-      {
-        test: /\.svg$/,
-        loader: 'svg-sprite-loader',
-        options: {
-          symbolId: 'icon-[name]',
+    resolve: {
+      extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    },
+
+    module: {
+      rules: [
+        {
+          test: /\.(t|j)sx?$/,
+          use: [
+            {
+              loader: require.resolve('babel-loader'),
+              options: {
+                presets: [
+                  '@babel/preset-typescript',
+                  '@babel/preset-react',
+                ],
+                plugins: [
+                  '@babel/plugin-proposal-class-properties',
+                  isDevelopment && !isWorker && require.resolve('react-refresh/babel'),
+                ].filter(Boolean),
+              },
+            },
+          ],
         },
-      },
-    ]
-  },
 
-  devServer: {
-    port: 9019,
-    host: '0.0.0.0',
-    hotOnly: true,
-    inline: true,
-    disableHostCheck: true,
-  },
+        {
+          test: /\.less$/,
+          use: [
+            'style-loader',
+            'css-loader',
+            'less-loader',
+          ],
+        },
 
-  externals: {
-    'react': 'React',
-    'react-dom': 'ReactDOM',
-  },
-}
+        {
+          test: /\.svg$/,
+          loader: 'svg-sprite-loader',
+          options: {
+            symbolId: 'icon-[name]',
+          },
+        },
+      ],
+    },
 
-if (isDevServer) {
-  commonConfig.devtool = 'source-map'
+    externals: isDevelopment ? {} : {
+      'react': 'React',
+      'react-dom': 'ReactDOM',
+    },
+
+    plugins: [
+      !isWorker && new HtmlWebpackPlugin({
+        template: path.resolve(__dirname, 'index.html'),
+      }),
+      isDevelopment && !isWorker && new ReactRefreshWebpackPlugin(),
+    ].filter(Boolean),
+  };
+
+  return config;
 }
 
 module.exports = [
-  Object.assign({
-    entry: {
-      index: './src/index',
-    },
-  }, commonConfig),
-
-  Object.assign({
-    entry: {
-      worker: './src/worker',
-    },
-    target: 'webworker'
-  }, commonConfig),
-]
+  createConfig('index', false),
+  createConfig('worker', true),
+];

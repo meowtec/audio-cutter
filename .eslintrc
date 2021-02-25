@@ -1,15 +1,20 @@
 {
-  "parser": "babel-eslint",
-  "extends": ["standard", "standard-react"],
-  "env": {
-    "browser": true
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json",
   },
-  "globals": {
-    "ant": true,
-    "Tracert": true
+  "plugins": [
+    "@typescript-eslint",
+  ],
+  "extends": ["airbnb-typescript", "airbnb/hooks"],
+  "env": {
+    "browser": true,
   },
   "rules": {
-    "comma-dangle": ["error", "always-multiline"],
-    "react/no-unused-prop-types": "warn"
+    "no-mixed-operators": ["error", {
+      "allowSamePrecedence": true
+    }],
+    "react/react-in-jsx-scope": 0,
+    "react/require-default-props": 0,
   }
 }
