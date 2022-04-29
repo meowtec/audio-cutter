@@ -1,5 +1,4 @@
 /* eslint-disable quote-props */
-// @ts-check
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
@@ -77,10 +76,10 @@ function createConfig(
     },
 
     plugins: [
-      !isWorker && new HtmlWebpackPlugin({
+      !isWorker ? new HtmlWebpackPlugin({
         template: path.resolve(__dirname, 'index.html'),
-      }),
-      isDevelopment && !isWorker && new ReactRefreshWebpackPlugin(),
+      }) : null,
+      isDevelopment && !isWorker ? new ReactRefreshWebpackPlugin() : null,
     ].filter(Boolean),
   };
 
