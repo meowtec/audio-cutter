@@ -84,6 +84,13 @@ function App() {
     });
   };
 
+  const handleEnd = () => {
+    setState({
+      currentTime: state.startTime,
+      paused: false,
+    });
+  };
+
   const handlePlayPauseClick = () => {
     setState({
       paused: !state.paused,
@@ -93,6 +100,7 @@ function App() {
   const handleReplayClick = () => {
     setState({
       currentTime: state.startTime,
+      paused: false,
     });
   };
 
@@ -152,6 +160,7 @@ function App() {
                   onStartTimeChange={handleStartTimeChange}
                   onEndTimeChange={handleEndTimeChange}
                   onCurrentTimeChange={handleCurrentTimeChange}
+                  onEnd={handleEnd}
                 />
               )
             }

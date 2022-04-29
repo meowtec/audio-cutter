@@ -8,6 +8,7 @@ import React, {
 import Waver from './waver';
 import Dragger, { Pos } from './dragger';
 import { formatSeconds } from './utils';
+import { useRaf } from './hooks';
 
 const containerWidth = 1000;
 const containerHeight = 160;
@@ -43,6 +44,7 @@ interface PlayerProps {
   onStartTimeChange(time: number): void;
   onEndTimeChange(time: number): void;
   onCurrentTimeChange(time: number): void;
+  onEnd(): void;
 }
 
 export default function Player({
@@ -55,6 +57,7 @@ export default function Player({
   onStartTimeChange,
   onEndTimeChange,
   onCurrentTimeChange,
+  onEnd,
 }: PlayerProps) {
   const widthDurationRatio = containerWidth / audioBuffer.duration;
   const time2pos = (time: number) => time * widthDurationRatio;
@@ -75,7 +78,7 @@ export default function Player({
   const end = time2pos(endTime);
   const current = time2pos(currentTime);
 
-  const formated = formatSeconds(currentTime);
+  const currentTimeFormatted = formatSeconds(currentTime);
 
   const handleDragStart = useCallback(({ x }: Pos) => {
     onStartTimeChange(clampTime(pos2Time(x)));
@@ -89,14 +92,19 @@ export default function Player({
     onCurrentTimeChange(clampTime(pos2Time(x)));
   }, [clampTime, onCurrentTimeChange, pos2Time]);
 
-  const handleTimeUpdate = (event: React.SyntheticEvent<HTMLAudioElement, Event>) => {
-    const { currentTime: time } = event.currentTarget;
+  const handleTimeUpdate = () => {
+    if (!audioRef.current) return;
+    const { currentTime: time } = audioRef.current;
+    if (time === currentTime) return;
     onCurrentTimeChange(time);
+    if (time >= endTime && currentTime < endTime) {
+      onEnd();
+    }
     currentTimeRef.current = time;
   };
 
   const handleEnded = () => {
-    onCurrentTimeChange(0);
+    onEnd();
   };
 
   const url = useMemo(() => URL.createObjectURL(blob), [blob]);
@@ -123,13 +131,14 @@ export default function Player({
     }
   }, [currentTime]);
 
+  useRaf(handleTimeUpdate);
+
   return (
     <div className="player">
       <audio
         hidden
         src={url}
         ref={audioRef}
-        onTimeUpdate={handleTimeUpdate}
         onEnded={handleEnded}
       />
       <div className="clipper">
@@ -165,11 +174,11 @@ export default function Player({
         onDrag={handleDragCurrent}
       >
         <div className="cursor-current">
-          <span className="num">{formated[0]}</span>
+          <span className="num">{currentTimeFormatted[0]}</span>
           &apos;
-          <span className="num">{formated[1]}</span>
+          <span className="num">{currentTimeFormatted[1]}</span>
           .
-          <span className="num">{formated[2].toString().padStart(2, '0')}</span>
+          <span className="num">{currentTimeFormatted[2].toString().padStart(2, '0')}</span>
         </div>
       </Dragger>
       <Dragger

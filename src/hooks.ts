@@ -1,5 +1,10 @@
-/* eslint-disable import/prefer-default-export */
-import { Reducer, useReducer } from 'react';
+import {
+  Reducer,
+  useCallback,
+  useEffect,
+  useReducer,
+  useRef,
+} from 'react';
 
 type ClassicStateUpdate<State> = Partial<State> | ((state: State) => State);
 
@@ -15,4 +20,18 @@ export function useClassicState<State extends Record<string, unknown>>(
     },
     initialState,
   );
+}
+
+export function useRaf(callback: () => void) {
+  const raf = useRef<number>();
+
+  const rafCallback = useCallback(() => {
+    raf.current = requestAnimationFrame(rafCallback);
+    callback();
+  }, [callback]);
+
+  useEffect(() => {
+    raf.current = requestAnimationFrame(rafCallback);
+    return () => cancelAnimationFrame(raf.current!);
+  }, [rafCallback]);
 }
