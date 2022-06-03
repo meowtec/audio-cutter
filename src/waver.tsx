@@ -26,9 +26,11 @@ function AudioWave({
   audioBuffer,
   className,
 }: AudioWaveProps) {
+  const deviceWidth = width * dpr;
+
   const peaks = useMemo(
-    () => getPeaks(width * dpr, audioBuffer.getChannelData(0)),
-    [audioBuffer, width],
+    () => getPeaks(Math.floor(deviceWidth), audioBuffer.getChannelData(0)),
+    [audioBuffer, deviceWidth],
   );
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -39,7 +41,7 @@ function AudioWave({
     if (!ctx) return;
 
     ctx.lineWidth = 1;
-    ctx.clearRect(0, 0, width * dpr, height * dpr);
+    ctx.clearRect(0, 0, deviceWidth, height * dpr);
 
     for (let i = 0; i < count; i += 1) {
       const min = peaks[0][i];

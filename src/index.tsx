@@ -236,7 +236,7 @@ function App() {
                   {' '}
                   <span className="seconds-total">
                     {
-                    displaySeconds(state.audioBuffer!.duration)
+                    displaySeconds(state.audioBuffer?.duration ?? 0)
                   }
                   </span>
                   {' '}
