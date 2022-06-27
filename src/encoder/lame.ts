@@ -2,12 +2,12 @@ import { Encoder } from '../types';
 
 Object.assign(globalThis, {
   Mp3LameEncoderConfig: {
-    memoryInitializerPrefixURL: '../vendor/',
+    memoryInitializerPrefixURL: '/audio-cutter/vendor/',
     TOTAL_MEMORY: 1073741824,
   },
 });
 
-importScripts('../../vendor/Mp3LameEncoder.min.js');
+importScripts('/audio-cutter/vendor/Mp3LameEncoder.min.js');
 
 const encodeAudioBufferLame: Encoder = ({
   channels,
