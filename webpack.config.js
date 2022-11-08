@@ -1,5 +1,6 @@
 /* eslint-disable quote-props */
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
@@ -80,6 +81,9 @@ function createConfig(
         template: path.resolve(__dirname, 'index.html'),
       }) : null,
       isDevelopment && !isWorker ? new ReactRefreshWebpackPlugin() : null,
+      new webpack.DefinePlugin({
+        'process.env.IS_DEV': isDevelopment ? 'true' : 'false',
+      }),
     ].filter(Boolean),
   };
 

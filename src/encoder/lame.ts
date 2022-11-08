@@ -1,13 +1,17 @@
 import { Encoder } from '../types';
 
+const vendorPrefix = process.env.IS_DEV
+  ? '/vendor/'
+  : '/audio-cutter/vendor/';
+
 Object.assign(globalThis, {
   Mp3LameEncoderConfig: {
-    memoryInitializerPrefixURL: '/audio-cutter/vendor/',
+    memoryInitializerPrefixURL: vendorPrefix,
     TOTAL_MEMORY: 1073741824,
   },
 });
 
-importScripts('/audio-cutter/vendor/Mp3LameEncoder.min.js');
+importScripts(`${vendorPrefix}Mp3LameEncoder.min.js`);
 
 const encodeAudioBufferLame: Encoder = ({
   channels,

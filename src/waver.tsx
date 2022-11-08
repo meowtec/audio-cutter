@@ -34,7 +34,7 @@ function AudioWave({
   );
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const piant = () => {
+  const paint = () => {
     const ctx = canvasRef.current?.getContext('2d');
     const count = peaks[0].length;
     const centerY = (height / 2) * dpr;
@@ -50,20 +50,20 @@ function AudioWave({
 
       ctx.beginPath();
       ctx.strokeStyle = color1;
-      ctx.moveTo(x, ((min + 1) * height) + 0.5);
+      ctx.moveTo(x, centerY + (centerY * min) + 0.5);
       ctx.lineTo(x, centerY);
       ctx.stroke();
 
       ctx.beginPath();
       ctx.strokeStyle = color2;
       ctx.moveTo(x, centerY);
-      ctx.lineTo(x, ((max + 1) * height) + 0.5);
+      ctx.lineTo(x, centerY + (centerY * max) + 0.5);
       ctx.stroke();
     }
   };
 
   useEffect(() => {
-    piant();
+    paint();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
